@@ -3,8 +3,8 @@
 ## Try
 
 ```sh
-nix run git+https://git.caspervk.net/caspervk/f.git claude setup-token
-nix run git+https://git.caspervk.net/caspervk/f.git CLAUDE_CODE_OAUTH_TOKEN=hunter2 claude
+nix run git+https://git.caspervk.net/caspervk/f.git -- claude setup-token
+nix run git+https://git.caspervk.net/caspervk/f.git -- CLAUDE_CODE_OAUTH_TOKEN=hunter2 claude
 ```
 
 ## Install

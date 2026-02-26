@@ -45,5 +45,16 @@
     }
   ];
 
+  # Execute command(s) passed as program arguments (see flake.nix), then
+  # poweroff automatically when the program exits -- otherwise you will be
+  # stuck in an auto-login loop.
+  programs.bash.loginShellInit =
+    # bash
+    ''
+      cd host/
+      /run/shell-init
+      poweroff
+    '';
+
   system.stateVersion = lib.trivial.release; # No need to read any comments!
 }

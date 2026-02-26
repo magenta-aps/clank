@@ -40,15 +40,4 @@
     "C /root/.claude/settings.json 0600 root root - ${claudeSettings}"
     "C /root/.claude/.credentials.json 0600 root root - /run/secrets/claude-credentials.json"
   ];
-
-  # Automatically start Claude and power off container when done
-  programs.bash.interactiveShellInit =
-    # bash
-    ''
-      # TODO
-      # eval "$SHELL_INIT"
-      cd host/
-      claude
-      poweroff
-    '';
 }
