@@ -55,6 +55,7 @@
             # https://www.redhat.com/en/blog/podman-inside-container
             "--privileged"
             "--security-opt label=disable"
+            "--security-opt apparmor=unconfined"
             "--volume /proc/sys:/proc/sys:rw"
             # TODO
             "--volume \"$HOME/.local/share/containers/storage\":/var/lib/shared:ro"
