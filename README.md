@@ -3,8 +3,8 @@
 ## Try
 
 ```sh
-nix run git+https://git.caspervk.net/caspervk/clank.git -- claude setup-token
-nix run git+https://git.caspervk.net/caspervk/clank.git -- CLAUDE_CODE_OAUTH_TOKEN=hunter2 claude
+nix run github:magenta-aps/clank -- claude setup-token
+nix run github:magenta-aps/clank -- CLAUDE_CODE_OAUTH_TOKEN=hunter2 claude
 ```
 
 ## Install
@@ -13,7 +13,7 @@ nix run git+https://git.caspervk.net/caspervk/clank.git -- CLAUDE_CODE_OAUTH_TOK
 {
   inputs = {
     clank = {
-      url = "git+https://git.caspervk.net/caspervk/clank.git";
+      url = "github:magenta-aps/clank";
       # inputs.nixpkgs.follows = "nixpkgs";
     };
   };
