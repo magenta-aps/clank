@@ -18,30 +18,41 @@
     CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
   };
 
-  # TODO
-  # systemd.tmpfiles.rules = let
-  #   # https://code.claude.com/docs/en/settings
-  #   claudeState = pkgs.writeText "claude.json" (builtins.toJSON {
-  #     bypassPermissionsModeAccepted = true;
-  #     hasCompletedOnboarding = true;
-  #     theme = "dark";
-  #   });
-  #   claudeSettings = pkgs.writeText "claude-settings.json" (builtins.toJSON {
-  #     # Disable commercials in git commits
-  #     attribution = {
-  #       commit = "";
-  #       pr = "";
-  #     };
-  #     permissions = {
-  #       defaultMode = "bypassPermissions"; # yolo
-  #     };
-  #     # Load AGENTS.md instead of claude.md
-  #     customInstructions = {
-  #       files = ["AGENTS.md"];
-  #     };
-  #   });
-  # in [
-  #   "C /root/.claude.json 0600 root root - ${claudeState}"
-  #   "C /root/.claude/settings.json 0600 root root - ${claudeSettings}"
-  # ];
+  # https://code.claude.com/docs/en/settings
+  systemd.tmpfiles.rules = let
+    claudeJson = pkgs.writeText "claude.json" (builtins.toJSON {
+      bypassPermissionsModeAccepted = true; # yolo
+      # Claude Code asks us to log in during onboarding. We want to use
+      # CLAUDE_CODE_OAUTH_TOKEN instead.
+      hasCompletedOnboarding = true;
+      # Always trust the mounted host volume
+      projects = {
+        "/root/host" = {
+          hasTrustDialogAccepted = true;
+        };
+      };
+      theme = "dark";
+    });
+    claudeSettingsJson = pkgs.writeText "claude-settings.json" (builtins.toJSON {
+      # Disable commercials in git commits
+      attribution = {
+        commit = "";
+        pr = "";
+      };
+      # Load AGENTS.md instead of CLAUDE.md
+      customInstructions = {
+        files = ["AGENTS.md"];
+      };
+      # Default to the best model
+      model = "opus";
+      # yolo
+      permissions = {
+        defaultMode = "bypassPermissions";
+        skipDangerousModePermissionPrompt = true;
+      };
+    });
+  in [
+    "C /root/.claude.json 0600 root root - ${claudeJson}"
+    "C /root/.claude/settings.json 0600 root root - ${claudeSettingsJson}"
+  ];
 }
