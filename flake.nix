@@ -45,7 +45,7 @@
 
       container = nixpkgs.lib.nixosSystem {
         system = system;
-        modules = [./container];
+        modules = [./container/base ./container/podman.nix];
       };
     });
   };
