@@ -36,6 +36,7 @@ def main(args: argparse.Namespace) -> None:
         f"--volume={Path.home()}/.config/clank.sh:/root/.config/clank.sh:ro",
         # Mount current directory to /host/
         "--volume=./:/root/host:rw",
+        "--volume=./.git/hooks:/root/host/.git/hooks:ro",
         # https://discourse.nixos.org/t/running-nix-os-containers-directly-from-the-store-with-podman/29220
         # https://github.com/metaspace/container-nixos/tree/main
         "--volume=/nix/store:/nix/store:ro",
