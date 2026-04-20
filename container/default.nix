@@ -5,6 +5,7 @@
 }: {
   imports = [
     ./claude.nix
+    # ./docker.nix
     ./hardware.nix
     ./podman.nix
   ];
