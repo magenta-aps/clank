@@ -30,10 +30,10 @@ def main(args: argparse.Namespace) -> None:
         "--security-opt=label=disable",
         "--security-opt=apparmor=unconfined",
         "--volume=/proc/sys:/proc/sys:rw",
-        # TODO
+        # TODO: only mount if exists
         f"--volume={Path.home()}/.local/share/containers/storage:/var/lib/shared:ro",
         f"--volume={Path.home()}/.config/git:/root/.config/git:ro",
-        f"--volume={Path.home()}/.config/clank.env:/root/.config/clank.env:ro",
+        f"--volume={Path.home()}/.config/clank.sh:/root/.config/clank.sh:ro",
         # Mount current directory to /host/
         "--volume=./:/root/host:rw",
         # https://discourse.nixos.org/t/running-nix-os-containers-directly-from-the-store-with-podman/29220

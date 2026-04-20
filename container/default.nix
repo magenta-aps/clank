@@ -45,16 +45,22 @@
     }
   ];
 
-  # Execute command(s) passed as program arguments (see flake.nix), then
-  # poweroff automatically when the program exits -- otherwise you will be
-  # stuck in an auto-login loop.
-  programs.bash.loginShellInit =
-    # bash
-    ''
-      cd host/
-      /run/shell-init
-      poweroff
-    '';
+  programs.bash = {
+    # Load mounted environment variables and enter the mounted host/ directory.
+    loginShellInit =
+      # bash
+      ''
+        source ~/.config/clank.sh
+        cd host/
+      '';
+    # Power off automatically when the login shell exits -- otherwise you will
+    # be stuck in an auto-login loop on CTRL-D.
+    logout =
+      # bash
+      ''
+        poweroff
+      '';
+  };
 
   system.stateVersion = lib.trivial.release; # No need to read any comments!
 }
