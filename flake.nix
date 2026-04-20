@@ -20,6 +20,21 @@
     packages = forAllSystems (system: let
       pkgs = nixpkgs.legacyPackages.${system};
     in {
+      containerDocker = nixpkgs.lib.nixosSystem {
+        system = system;
+        modules = [
+          ./container/base
+          ./container/docker.nix
+        ];
+      };
+      containerPodman = nixpkgs.lib.nixosSystem {
+        system = system;
+        modules = [
+          ./container/base
+          ./container/podman.nix
+        ];
+      };
+
       default = pkgs.python3Packages.buildPythonApplication {
         pname = "clank";
         version = "0.0.1";
@@ -35,17 +50,11 @@
           pkgs.podman
         ];
 
-        makeWrapperArgs = [
-          "--add-flag"
-          "--init=${self.packages.${system}.container.config.system.build.toplevel}/init"
-          "--add-flag"
-          "--empty=${pkgs.emptyDirectory}"
+        makeWrapperArgs = builtins.concatLists [
+          ["--set" "CLANK_INIT_DOCKER" "${self.packages.${system}.containerDocker.config.system.build.toplevel}/init"]
+          ["--set" "CLANK_INIT_PODMAN" "${self.packages.${system}.containerPodman.config.system.build.toplevel}/init"]
+          ["--set" "CLANK_EMPTY_DIRECTORY" "${pkgs.emptyDirectory}"]
         ];
-      };
-
-      container = nixpkgs.lib.nixosSystem {
-        system = system;
-        modules = [./container/base ./container/podman.nix];
       };
     });
   };
