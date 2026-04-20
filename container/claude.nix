@@ -18,30 +18,30 @@
     CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
   };
 
-  systemd.tmpfiles.rules = let
-    # https://code.claude.com/docs/en/settings
-    claudeState = pkgs.writeText "claude.json" (builtins.toJSON {
-      bypassPermissionsModeAccepted = true;
-      hasCompletedOnboarding = true;
-      theme = "dark";
-    });
-    claudeSettings = pkgs.writeText "claude-settings.json" (builtins.toJSON {
-      # Disable commercials in git commits
-      attribution = {
-        commit = "";
-        pr = "";
-      };
-      permissions = {
-        defaultMode = "bypassPermissions"; # yolo
-      };
-      # Load AGENTS.md instead of claude.md
-      customInstructions = {
-        files = ["AGENTS.md"];
-      };
-    });
-  in [
-    "C /root/.claude.json 0600 root root - ${claudeState}"
-    "C /root/.claude/settings.json 0600 root root - ${claudeSettings}"
-    "C /root/.claude/.credentials.json 0600 root root - /run/secrets/claude-credentials.json"
-  ];
+  # TODO
+  # systemd.tmpfiles.rules = let
+  #   # https://code.claude.com/docs/en/settings
+  #   claudeState = pkgs.writeText "claude.json" (builtins.toJSON {
+  #     bypassPermissionsModeAccepted = true;
+  #     hasCompletedOnboarding = true;
+  #     theme = "dark";
+  #   });
+  #   claudeSettings = pkgs.writeText "claude-settings.json" (builtins.toJSON {
+  #     # Disable commercials in git commits
+  #     attribution = {
+  #       commit = "";
+  #       pr = "";
+  #     };
+  #     permissions = {
+  #       defaultMode = "bypassPermissions"; # yolo
+  #     };
+  #     # Load AGENTS.md instead of claude.md
+  #     customInstructions = {
+  #       files = ["AGENTS.md"];
+  #     };
+  #   });
+  # in [
+  #   "C /root/.claude.json 0600 root root - ${claudeState}"
+  #   "C /root/.claude/settings.json 0600 root root - ${claudeSettings}"
+  # ];
 }
