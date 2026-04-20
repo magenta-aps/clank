@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "clank"
+version = "0.0.1"
+
+[tool.setuptools]
+packages = ["clank"]
+
+[project.scripts]
+clank = "clank.main:cli"
