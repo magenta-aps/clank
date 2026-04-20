@@ -45,6 +45,11 @@
     }
   ];
 
+  programs.vim = {
+    enable = true;
+    defaultEditor = true;
+  };
+
   programs.bash = {
     # Load mounted environment variables and enter the mounted host/ directory.
     loginShellInit =
