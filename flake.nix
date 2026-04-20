@@ -16,11 +16,11 @@
     # `nix fmt`
     formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
 
-    # `nix build`
+    # `nix build` / `nix run` / `nix shell`
     packages = forAllSystems (system: let
       pkgs = nixpkgs.legacyPackages.${system};
     in {
-      cli = pkgs.python3Packages.buildPythonApplication {
+      default = pkgs.python3Packages.buildPythonApplication {
         pname = "clank";
         version = "0.0.1";
         pyproject = true;
@@ -46,14 +46,6 @@
       container = nixpkgs.lib.nixosSystem {
         system = system;
         modules = [./container];
-      };
-    });
-
-    # `nix run`
-    apps = forAllSystems (system: {
-      default = {
-        type = "app";
-        program = "${self.packages.${system}.cli}/bin/clank";
       };
     });
   };
