@@ -1,15 +1,10 @@
 # clank
 
-## Try
+`clank` is an AI sandbox, pre-configured to quickly start using AI.
 
-```sh
-nix run github:magenta-aps/clank -- claude setup-token
-nix run github:magenta-aps/clank -- CLAUDE_CODE_OAUTH_TOKEN=hunter2 claude
-```
+## Quick Start
 
-## Install
-
-### Linux (non-NixOS)
+### Linux Install (non-NixOS)
 
 Install the [Nix package manager](https://nixos.org/download/) on your distro. This is just a package manager, not a full OS switch:
 
@@ -35,13 +30,30 @@ mkdir -p ~/.config/nix
 echo 'experimental-features = nix-command flakes' >> ~/.config/nix/nix.conf
 ```
 
-Then follow the [Try](#try) section above. For a permanent install:
+Run the following for a persistent install:
 
 ```sh
 nix profile add github:magenta-aps/clank
 ```
 
-### NixOS
+Alternatively, you can run the latest version directly from GitHub, without installing it:
+
+```sh
+nix run github:magenta-aps/clank
+```
+
+If everything succeeded, you should be able to boot into your sandbox like so:
+
+```sh
+clank
+```
+
+This boots into a NixOS container. To set up your favorite AI coding assistant, use one of the following links:
+- [Set up Claude Code](#set-up-claude-code)
+- Set up Gemini (TODO)
+- Set up Open Code with a Scaleway model (TODO)
+
+### NixOS Install
 
 ```nix
 {
@@ -62,8 +74,55 @@ nix profile add github:magenta-aps/clank
 }
 ```
 
-### Run
+### Set up Claude Code
+
+Prerequisites:
+- [Install `clank`](#quick-start)
+- Have a [Claude account](https://claude.ai)
+
+Boot into `clank`:
 
 ```sh
 clank
+```
+
+Inside `clank`, run the following and follow the on-screen instructions to create an access token, linked with your Claude account:
+
+```sh
+claude setup-token
+```
+
+You should now have a Claude access token. Copy it.
+
+Create a file in `~/.config/clank.sh` containing the following:
+
+```sh
+export CLAUDE_CODE_OAUTH_TOKEN=<your-access-token-here>
+```
+
+Re-open `clank`. You should now be able to start Claude Code with your account, without having to log in every time.
+
+## Usage
+
+Prerequisites:
+- [Complete the quick start section](#quick-start)
+
+Run clank:
+
+```sh
+clank
+```
+
+This starts a podman container running NixOS, with some essential packages pre-installed, as well as several AI coding assistants (TODO: right now it's just Claude).
+
+From here, you can launch your coding assistant, for instance:
+
+```sh
+claude
+```
+
+## Updating Clank (non-NixOs)
+
+```sh
+nix profile upgrade clank
 ```
