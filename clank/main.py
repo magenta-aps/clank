@@ -39,7 +39,7 @@ def cli() -> None:
         "--volume=./:/root/host:rw",
         # TODO: only mount if exists
         # TODO: explain why
-        "--volume=./.git/hooks:/root/host/.git/hooks:ro",
+        # "--volume=./.git/hooks:/root/host/.git/hooks:ro",
         # https://discourse.nixos.org/t/running-nix-os-containers-directly-from-the-store-with-podman/29220
         # https://github.com/metaspace/container-nixos/tree/main
         "--volume=/nix/store:/nix/store:ro",
