@@ -94,7 +94,7 @@ claude setup-token
 
 You should now have a Claude access token. Copy it.
 
-Create a file in `~/.config/clank.sh` containing the following:
+Create a file in `~/.config/clank.sh` (on the host machine, not inside clank) containing the following:
 
 ```sh
 export CLAUDE_CODE_OAUTH_TOKEN=<your-access-token-here>
