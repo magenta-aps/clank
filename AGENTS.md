@@ -16,4 +16,4 @@
 
 ## Conventions
 - Commit messages: conventional commits
-  - e.g.: `feat: added support for XYZ` or `fix: crash when XYZ is not set`
+  - e.g.: `feat: add support for XYZ` or `fix: fix crash when XYZ is not set`
