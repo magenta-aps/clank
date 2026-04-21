@@ -12,8 +12,7 @@
 - Base container OS: NixOS
 
 ## Boundaries
-- Do not execute git commands if not explicitly asked to do so
-- You are not allowed to push or pull from the git remote
+- You are not allowed to push to the git remote
 
 ## Conventions
 - Commit messages: conventional commits
