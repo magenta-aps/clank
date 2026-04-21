@@ -13,26 +13,20 @@ nix run github:magenta-aps/clank -- CLAUDE_CODE_OAUTH_TOKEN=hunter2 claude
 
 Install the [Nix package manager](https://nixos.org/download/) on your distro. This is just a package manager, not a full OS switch:
 
-<blockquote>
-    **Multi-user (requires sudo)**
-   
-    ```sh
-    sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
-    ```
+> **Multi-user (requires sudo)**
+> 
+> ```sh
+> sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
+> ```
 
-</blockquote>
-
-<blockquote>
-    **Fedora**
-
-    Allegedly, the multi-user install above does not work on SELinux distros, in that case you can install Nix as a Fedora package instead:
-    
-    ```sh
-    sudo dnf install nix nix-daemon
-    sudo systemctl enable --now nix-daemon
-    ```
-
-</blockquote>
+> **Fedora**
+> 
+> Allegedly, the multi-user install above does not work on SELinux distros, in that case you can install Nix as a Fedora package instead:
+>
+> ```sh
+> sudo dnf install nix nix-daemon
+> sudo systemctl enable --now nix-daemon
+> ```
 
 Reopen your terminal, then enable flakes if not already enabled:
 
