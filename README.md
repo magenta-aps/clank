@@ -50,8 +50,8 @@ clank
 
 This boots into a NixOS container. To set up your favorite AI coding assistant, use one of the following links:
 - [Set up Claude Code](#set-up-claude-code)
+- [Set up Open Code with Scaleway](#set-up-open-code-with-scaleway)
 - Set up Gemini (TODO)
-- Set up Open Code with a Scaleway model (TODO)
 
 ### NixOS Install
 
@@ -102,6 +102,32 @@ export CLAUDE_CODE_OAUTH_TOKEN=<your-access-token-here>
 
 Re-open `clank`. You should now be able to start Claude Code with your account, without having to log in every time.
 
+### Set up Open Code with Scaleway
+
+Prerequisites:
+- [Install `clank`](#quick-start)
+- Have a [Scaleway account](https://www.scaleway.com/) with access to [Scaleway Generative APIs](https://www.scaleway.com/en/generative-apis/)
+
+Create or retrieve your Scaleway secret key from the [Scaleway console](https://console.scaleway.com/iam/api-keys).
+
+Add the following to `~/.config/clank.sh` (on the host machine, not inside clank):
+
+```sh
+export SCW_SECRET_KEY=<your-scaleway-secret-key>
+```
+
+Boot (or re-open) `clank`:
+
+```sh
+clank
+```
+
+You should now be able to start Open Code, which will automatically discover available Scaleway models:
+
+```sh
+opencode
+```
+
 ## Usage
 
 Prerequisites:
@@ -113,7 +139,7 @@ Run clank:
 clank
 ```
 
-This starts a podman container running NixOS, with some essential packages pre-installed, as well as several AI coding assistants (TODO: right now it's just Claude).
+This starts a podman container running NixOS, with some essential packages pre-installed, as well as AI coding assistants (Claude Code and Open Code).
 
 From here, you can launch your coding assistant, for instance:
 
