@@ -11,7 +11,29 @@ nix run github:magenta-aps/clank -- CLAUDE_CODE_OAUTH_TOKEN=hunter2 claude
 
 ### Linux (non-NixOS)
 
-Install the Nix package manager on your distro (Ubuntu, Fedora, Debian, Arch, etc.) — this is just a package manager, not a full OS switch:
+Install the [Nix package manager](https://nixos.org/download/) on your distro. This is just a package manager, not a full OS switch:
+
+<details>
+    <summary>Multi-user (requires sudo)</summary>
+   
+    ```sh
+    sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
+    ```
+
+</details>
+
+<details>
+    <summary>Fedora</summary>
+
+    Allegedly, the multi-user install above does not work on SELinux distros, in that case you can install Nix as a Fedora package instead:
+    
+    ```sh
+    sudo dnf install nix nix-daemon
+    sudo systemctl enable --now nix-daemon
+    ```
+
+</details>
+
 
 ```sh
 sh <(curl -L https://nixos.org/nix/install) --daemon
