@@ -1,16 +1,8 @@
 {pkgs, ...}: {
   environment.systemPackages = [
-    pkgs.bash
     pkgs.coreutils
     pkgs.git
   ];
-
-  # Automatically log in as root
-  users = {
-    mutableUsers = false;
-    users.root.password = "";
-  };
-  services.getty.autologinUser = "root";
 
   # Unlike SSH, these variables aren't passed from the host terminal, so
   # everything is ugly by default.
@@ -19,25 +11,40 @@
     TERM = "xterm-256color";
   };
 
-  programs.bash = {
-    # Load mounted environment variables and enter the mounted host/ directory.
+  programs.fish = {
+    enable = true;
+    generateCompletions = false; # *really* slow
     loginShellInit =
-      # bash
+      # fish
       ''
+        # Load environment variables mounted from the host's ~/.config/clank.sh
+        # and enter the mounted host/ directory.
         source ~/.config/clank.sh
         cd host/
-        bash /command.sh
-      '';
-    # "Power off" and stop the container automatically when the login shell
-    # exits -- otherwise you will be stuck in an auto-login loop on CTRL-D.
-    # We double --force, so don't wait for anything to cleanly shut down, since
-    # this is an ephemeral container anyway.
-    logout =
-      # bash
-      ''
-        systemctl poweroff --force --force
+        # Run extra arguments if given on the command line, otherwise just
+        # spawn an interactive fish shell.
+        if test -s /command.sh
+          source /command.sh
+        else
+          fish
+        end
+        # "Power off" and stop the container when the shell exits -- otherwise
+        # you will be stuck in an auto-login loop on CTRL-D. We double --force,
+        # so we don't have to wait for anything to cleanly shut down, since
+        # this is an ephemeral container anyway.
+        exec systemctl poweroff --force --force
       '';
   };
+
+  # Automatically log in as root
+  users = {
+    mutableUsers = false;
+    users.root = {
+      password = "";
+      shell = pkgs.fish;
+    };
+  };
+  services.getty.autologinUser = "root";
 
   programs.vim = {
     enable = true;
