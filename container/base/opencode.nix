@@ -1,14 +1,9 @@
 {pkgs, ...}: {
   environment.systemPackages = [
+    pkgs.fzf
     pkgs.opencode
     pkgs.ripgrep
-    pkgs.fzf
   ];
-
-  # environment.variables = {
-  #   # Tell Open Code's local provider to use Scaleway's OpenAI-compatible API
-  #   LOCAL_ENDPOINT = "https://api.scaleway.ai/v1";
-  # };
 
   # https://opencode.ai/docs/config
   systemd.tmpfiles.rules = let
