@@ -110,6 +110,11 @@ def main(tmp: Path) -> None:
         f"{root}/init",
     ]
 
+    # Prime the podman pause process to avoid AppArmor errors due to user
+    # namespace creation. Dumb workaround for
+    # https://github.com/containers/podman/issues/24642.
+    subprocess.run(["podman", "unshare", "true"])
+
     try:
         subprocess.run(command, check=True)
     except subprocess.CalledProcessError as e:
