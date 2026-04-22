@@ -1,7 +1,8 @@
-import argparse
 import os
 import subprocess
+import sys
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 # Passed by buildPythonApplication's makeWrapperArgs in flake.nix
 CLANK_EMPTY_DIRECTORY = os.environ["CLANK_EMPTY_DIRECTORY"]
@@ -10,16 +11,11 @@ CLANK_ROOT_PODMAN = os.environ["CLANK_ROOT_PODMAN"]
 
 
 def cli() -> None:
-    parser = argparse.ArgumentParser(
-        prog="clank",
-    )
-    parser.add_argument(
-        "command",
-        nargs="*",
-        help="Command to run inside the container.",
-    )
-    args = parser.parse_args()  # TODO
+    with TemporaryDirectory() as tmp:
+        main(Path(tmp))
 
+
+def main(tmp: Path) -> None:
     command = [
         "podman",
         "run",
@@ -50,6 +46,14 @@ def cli() -> None:
         command += [
             f"--volume={home}/.config/clank.sh:/root/.config/clank.sh:ro",
         ]
+
+    # Whatever extra arguments were given on the command line are run in the
+    # container, e.g. `clank opencode --model=scaleway/qwen3.5-397b-a17b`.
+    command_sh = tmp.joinpath("command.sh")
+    command_sh.write_text(" ".join(sys.argv[1:]))
+    command += [
+        f"--volume={command_sh}:/command.sh:ro",
+    ]
 
     # Mount git config to ensure commits are done by the right author
     if home.joinpath(".config/git").exists():

@@ -58,6 +58,7 @@
       ''
         source ~/.config/clank.sh
         cd host/
+        bash /command.sh
       '';
     # Exit systemd and stop the container automatically when the login shell
     # exits -- otherwise you will be stuck in an auto-login loop on CTRL-D.
@@ -72,7 +73,6 @@
   systemd.settings.Manager = {
     DefaultTimeoutStopSec = "1s";
   };
-
 
   system.stateVersion = lib.trivial.release; # No need to read any comments!
 }
