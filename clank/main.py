@@ -3,10 +3,10 @@ import os
 import subprocess
 from pathlib import Path
 
-# Passed by buildPythonApplication's makeWrapperArgs
-CLANK_INIT_DOCKER = os.environ["CLANK_INIT_DOCKER"]
-CLANK_INIT_PODMAN = os.environ["CLANK_INIT_PODMAN"]
+# Passed by buildPythonApplication's makeWrapperArgs in flake.nix
 CLANK_EMPTY_DIRECTORY = os.environ["CLANK_EMPTY_DIRECTORY"]
+CLANK_ROOT_DOCKER = os.environ["CLANK_ROOT_DOCKER"]
+CLANK_ROOT_PODMAN = os.environ["CLANK_ROOT_PODMAN"]
 
 
 def cli() -> None:
@@ -48,11 +48,7 @@ def cli() -> None:
         "--systemd=always",
         "--rootfs",
         f"{CLANK_EMPTY_DIRECTORY}:O",
-    ]
-
-    # TODO: podman or docker
-    command += [
-        CLANK_INIT_PODMAN,
+        f"{CLANK_ROOT_PODMAN}/init",
     ]
     try:
         subprocess.run(command, check=True)

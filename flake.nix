@@ -51,9 +51,9 @@
         ];
 
         makeWrapperArgs = builtins.concatLists [
-          ["--set" "CLANK_INIT_DOCKER" "${self.packages.${system}.containerDocker.config.system.build.toplevel}/init"]
-          ["--set" "CLANK_INIT_PODMAN" "${self.packages.${system}.containerPodman.config.system.build.toplevel}/init"]
           ["--set" "CLANK_EMPTY_DIRECTORY" "${pkgs.emptyDirectory}"]
+          ["--set" "CLANK_ROOT_DOCKER" self.packages.${system}.containerDocker.config.system.build.toplevel]
+          ["--set" "CLANK_ROOT_PODMAN" self.packages.${system}.containerPodman.config.system.build.toplevel]
         ];
       };
     });
