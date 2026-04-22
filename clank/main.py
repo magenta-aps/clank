@@ -50,10 +50,5 @@ def cli() -> None:
         f"{CLANK_EMPTY_DIRECTORY}:O",
         f"{CLANK_ROOT_PODMAN}/init",
     ]
-    try:
-        subprocess.run(command, check=True)
-    except subprocess.CalledProcessError as e:
-        # The systemd init process exits with status code 130 when properly
-        # powered off.
-        if e.returncode not in (0, 130):
-            raise
+
+    subprocess.run(command, check=True)

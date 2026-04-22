@@ -57,14 +57,20 @@
         source ~/.config/clank.sh
         cd host/
       '';
-    # Power off automatically when the login shell exits -- otherwise you will
-    # be stuck in an auto-login loop on CTRL-D.
+    # Exit systemd and stop the container automatically when the login shell
+    # exits -- otherwise you will be stuck in an auto-login loop on CTRL-D.
     logout =
       # bash
       ''
-        poweroff
+        systemctl exit 0
       '';
   };
+
+  # Don't wait for containers to stop gracefully during exit
+  systemd.settings.Manager = {
+    DefaultTimeoutStopSec = "1s";
+  };
+
 
   system.stateVersion = lib.trivial.release; # No need to read any comments!
 }
