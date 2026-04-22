@@ -18,6 +18,7 @@
     dockerCompat = true;
   };
 
+  # TODO: set docker.io as default
   # TODO: google pull-through cache
 
   virtualisation.containers = {
@@ -41,7 +42,7 @@
     };
     storage.settings = {
       storage.options = {
-        # Use images from the host
+        # Use host's build/image cache to make builds and pulls faster
         # https://www.redhat.com/en/blog/image-stores-podman
         additionalimagestores = [
           "/var/lib/shared"

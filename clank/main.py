@@ -13,10 +13,12 @@ def cli() -> None:
     parser = argparse.ArgumentParser(
         prog="clank",
     )
-    # TODO: join string and send into container
-    parser.add_argument("args", nargs="*")
-    args = parser.parse_args()
-    print(args)  # TODO
+    parser.add_argument(
+        "command",
+        nargs="*",
+        help="Command to run inside the container.",
+    )
+    args = parser.parse_args()  # TODO
 
     command = [
         "podman",
@@ -40,28 +42,44 @@ def cli() -> None:
         "--volume=./:/root/host:rw",
     ]
 
-    # TODO
-    if (path := Path.home() / ".config/clank.sh").exists():
+    home = Path.home()
+
+    # clank.sh is the way to inject environment variables into the container.
+    # You could also use it to run arbitrary commands on startup.
+    if home.joinpath(".config/clank.sh").exists():
         command += [
-            f"--volume={path}:/root/.config/clank.sh:ro",
+            f"--volume={home}/.config/clank.sh:/root/.config/clank.sh:ro",
         ]
 
-    # TODO
-    if (path := Path.home() / ".local/share/containers/storage").exists():
+    # Mount git config to ensure commits are done by the right author
+    if home.joinpath(".config/git").exists():
         command += [
-            f"--volume={path}/:/var/lib/shared:ro",
+            f"--volume={home}/.config/git:/root/.config/git:ro",
+        ]
+
+    # Use Podman/Docker in the container depending on which one is installed on
+    # the host. Default to Podman in case neither is installed.
+    if Path("/var/lib/docker").exists():
+        root = CLANK_ROOT_DOCKER
+        command += [
             # Root is tmpfs. Mount Docker's data directory to a disk-backed
             # anonymous volume to avoid exploding ram usage.
-            # "--volume=/var/lib/docker/",
+            "--volume=/var/lib/docker",
+            # Mount host's build/image cache to make builds and pulls faster
+            # TODO
+        ]
+    else:
+        root = CLANK_ROOT_PODMAN
+        command += [
+            # Root is tmpfs. Mount Podman's data directory to a disk-backed
+            # anonymous volume to avoid exploding ram usage.
             "--volume=/var/lib/containers/storage",
         ]
-    root = CLANK_ROOT_PODMAN
-
-    # TODO
-    if (path := Path.home() / ".config/git").exists():
-        command += [
-            f"--volume={path}/:/root/.config/git:ro",
-        ]
+        if home.joinpath(".local/share/containers/storage").exists():
+            command += [
+                # Mount host's build/image cache to make builds and pulls faster
+                f"--volume={home}/.local/share/containers/storage:/var/lib/shared:ro",
+            ]
 
     command += [
         # NixOS just needs an /init and /nix/store to start, but podman needs
@@ -118,6 +136,11 @@ def cli() -> None:
 #
 # Podman uses the userspace fuse-overlayfs to avoid the Linux kernel
 # limitation, but it is buggy (content of deleted directory still visible).
+#
+# All of this is of course mitigated by the fact that we use anonymous volumes
+# for podman/docker storage, but in general it seems like a bad time to use
+# overlayfs as the root filesystem.
+#
 # https://github.com/containers/fuse-overlayfs/issues/324
 # https://github.com/containers/fuse-overlayfs/issues/425
 # https://github.com/containers/fuse-overlayfs/issues/444
