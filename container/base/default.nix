@@ -6,6 +6,7 @@
   imports = [
     ./claude.nix
     ./hardware.nix
+    ./opencode.nix
   ];
 
   environment.systemPackages = [
