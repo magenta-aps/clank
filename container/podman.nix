@@ -1,8 +1,9 @@
-{pkgs, ...}: {
-  # Podman can run rootless containers and be a drop-in replacement for Docker.
-  # It is used for systemd services containers defined using
-  # `virtualisation.oci-containers`.
-  # https://wiki.nixos.org/wiki/Podman
+{
+  lib,
+  pkgs,
+  ...
+}: {
+  # Stolen from https://git.caspervk.net/caspervk/nixos/src/commit/56ad8f33f998129a980e05dcd29ab45bec084301/modules/podman.nix
 
   virtualisation.podman = {
     enable = true;
@@ -17,9 +18,6 @@
     # which would allow members of the `podman` group to gain root access.
     dockerCompat = true;
   };
-
-  # TODO: set docker.io as default
-  # TODO: google pull-through cache
 
   virtualisation.containers = {
     enable = true;
@@ -49,5 +47,31 @@
         ];
       };
     };
+  };
+
+  # Add default image mirrors. NixOS generates registries.conf in the
+  # deprecated version 1 format so we overwrite the entire file.
+  # https://github.com/containers/image/blob/main/docs/containers-registries.conf.5.md
+  environment.etc."containers/registries.conf".text =
+    lib.mkForce
+    # toml
+    ''
+      # Unqualified images suck, but we'll do it for granddad
+      unqualified-search-registries = ["docker.io"]
+
+      # Use Google's Docker Hub mirror for everything docker.io
+      # https://cloud.google.com/artifact-registry/docs/pull-cached-dockerhub-images
+      [[registry]]
+      location = "docker.io"
+      [[registry.mirror]]
+      location = "mirror.gcr.io"
+    '';
+
+  # Use the (rootless) Podman user socket for compatibility with Docker-only
+  # tools such as `dive`.
+  # https://k3d.io/stable/usage/advanced/podman/#using-rootless-podman
+  environment.sessionVariables = rec {
+    DOCKER_HOST = "unix://${DOCKER_SOCK}";
+    DOCKER_SOCK = "\${XDG_RUNTIME_DIR}/podman/podman.sock";
   };
 }
