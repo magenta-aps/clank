@@ -122,7 +122,7 @@ export SCW_SECRET_KEY='<your-scaleway-secret-key>'
 export OPENCODE_MODEL='scaleway/<your-model-id>'
 ```
 
-`OPENCODE_MODEL` is an identifier for the specific model to use, it has the format `provider/model_id`. You can [browse supported Scaleway models](models.dev/?search=scaleway/). For instance, any of the following work:
+`OPENCODE_MODEL` is an identifier for the specific model to use, it has the format `provider/model_id`. You can [browse supported Scaleway models](https://models.dev/?search=scaleway/). For instance, any of the following work:
 - `scaleway/qwen3.5-397b-a17b`
 - `scaleway/llama-3.3-70b-instruct`
 
