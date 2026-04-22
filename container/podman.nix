@@ -18,6 +18,8 @@
     dockerCompat = true;
   };
 
+  # TODO: google pull-through cache
+
   virtualisation.containers = {
     enable = true;
     containersConf.settings = {

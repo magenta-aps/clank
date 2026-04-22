@@ -5,6 +5,8 @@
     enable = true;
   };
 
+  # TODO: google pull-through cache
+
   # TODO
   # virtualisation.containers = {
   #   enable = true;
