@@ -13,6 +13,7 @@
 
 ## Boundaries
 - You are not allowed to push to the git remote
+- Always prefer adding dependencies using nixpkgs if possible
 
 ## Conventions
 - Commit messages: conventional commits
