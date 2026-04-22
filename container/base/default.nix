@@ -33,6 +33,8 @@
   networking.firewall.enable = false;
   systemd.oomd.enable = false;
 
+  networking.hostName = "clank";
+
   systemd.mounts = [
     {
       where = "/sys/kernel/debug";
