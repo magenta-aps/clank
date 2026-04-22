@@ -28,12 +28,14 @@
         cd host/
         bash /command.sh
       '';
-    # Exit systemd and stop the container automatically when the login shell
+    # "Power off" and stop the container automatically when the login shell
     # exits -- otherwise you will be stuck in an auto-login loop on CTRL-D.
+    # We double --force, so don't wait for anything to cleanly shut down, since
+    # this is an ephemeral container anyway.
     logout =
       # bash
       ''
-        systemctl exit 0
+        systemctl poweroff --force --force
       '';
   };
 

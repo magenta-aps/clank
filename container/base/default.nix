@@ -24,10 +24,5 @@
     }
   ];
 
-  # Don't wait for containers to stop gracefully during exit
-  systemd.settings.Manager = {
-    DefaultTimeoutStopSec = "1s";
-  };
-
   system.stateVersion = lib.trivial.release; # No need to read any comments!
 }

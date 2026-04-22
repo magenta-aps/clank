@@ -110,7 +110,13 @@ def main(tmp: Path) -> None:
         f"{root}/init",
     ]
 
-    subprocess.run(command, check=True)
+    try:
+        subprocess.run(command, check=True)
+    except subprocess.CalledProcessError as e:
+        # The systemd init process exits with status code 130 when properly
+        # powered off.
+        if e.returncode not in (0, 130):
+            raise
 
 
 # [1]
