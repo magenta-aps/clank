@@ -2,18 +2,14 @@
   environment.systemPackages = [
     (pkgs.symlinkJoin {
       name = "gemini";
-      paths = [ pkgs.gemini-cli ];
-      nativeBuildInputs = [ pkgs.makeWrapper ];
+      paths = [pkgs.gemini-cli];
+      nativeBuildInputs = [pkgs.makeWrapper];
       postBuild = ''
         # why not
         wrapProgram "$out/bin/gemini" --add-flags "--yolo"
       '';
     })
   ];
-
-  environment.variables = {
-    GOOGLE_GENAI_USE_VERTEXAI = "0";
-  };
 
   # https://github.com/google-gemini/gemini-cli
   systemd.tmpfiles.rules = let

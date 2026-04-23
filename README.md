@@ -126,3 +126,9 @@ Add the following to `~/.config/clank.sh` (on the host):
 ```sh
 export GEMINI_API_KEY='<your-google-api-key>'  # https://vault.bitwarden.com/#/vault?itemId=c9b60efc-e0b3-4a7a-a3d7-b43500d29310
 ```
+
+You can now `gemini` without having to log in every time:
+
+```sh
+clank gemini
+```
