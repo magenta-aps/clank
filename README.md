@@ -30,7 +30,6 @@ your user's groups.** Yeah, it's cringe.
 ```sh
 sudo dnf install nix nix-daemon
 sudo systemctl enable --now nix-daemon
-# TODO: do you need to log in and out?
 ```
 
 ### 🚀 Try Clank
@@ -41,9 +40,44 @@ for how to avoid that.
 
 ```sh
 nix run github:magenta-aps/clank
+# or
+nix run github:magenta-aps/clank claude
+# or
+nix run github:magenta-aps/clank opencode
 ```
 
-### ⚙️ Configure Providers
+## 📦 Install Clank
+
+#### NixOS
+
+```nix
+{
+  inputs = {
+    clank = {
+      url = "github:magenta-aps/clank";
+      # inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+}
+```
+
+```nix
+{clank, pkgs, ...}: {
+  environment.systemPackages = [
+    clank.packages.${pkgs.stdenv.hostPlatform.system}.default
+  ];
+}
+```
+
+#### Everything Else
+
+```sh
+nix profile --refresh install github:magenta-aps/clank#clank
+# and later
+nix profile --refresh upgrade packages.x86_64-linux.clank
+```
+
+## ⚙️ Configure Providers
 
 ### Claude Code
 
@@ -56,7 +90,7 @@ clank claude setup-token
 Add it to `~/.config/clank.sh` (on the host):
 
 ```sh
-export CLAUDE_CODE_OAUTH_TOKEN=<your-access-token-here>
+export CLAUDE_CODE_OAUTH_TOKEN='<your-access-token-here>'
 ```
 
 You can now `claude` without having to log in every time:
@@ -71,7 +105,7 @@ Add the following to `~/.config/clank.sh` (on the host):
 
 ```sh
 export SCW_PROJECT_ID='594a268d-8577-4b86-a983-be375e13e197'  # Magenta's 'AI' Project ID
-export SCW_SECRET_KEY='<your-scaleway-secret-key>'  # See 'TODO' in Bitwarden
+export SCW_SECRET_KEY='<your-scaleway-secret-key>'  # https://vault.bitwarden.com/#/vault?itemId=c9b60efc-e0b3-4a7a-a3d7-b43500d29310
 export OPENCODE_MODEL='scaleway/qwen3.5-397b-a17b'  # https://models.dev/?search=scaleway/
 ```
 
@@ -90,19 +124,5 @@ inside the opencode interface.
 Add the following to `~/.config/clank.sh` (on the host):
 
 ```sh
-# TODO
-```
-
-### 📦 Install Clank
-
-#### NixOS
-
-```nix
-
-```
-
-#### Everything Else
-
-```sh
-
+export GEMINI_API_KEY='<your-google-api-key>'  # https://vault.bitwarden.com/#/vault?itemId=c9b60efc-e0b3-4a7a-a3d7-b43500d29310
 ```
