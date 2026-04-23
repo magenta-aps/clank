@@ -36,12 +36,14 @@ sudo systemctl enable --now nix-daemon
 ### 🚀 Try Clank
 
 Through the power of Nix, you can run Clank without installing anything else.
-But note that you will have to manually log in every time. See the next section
-for how to avoid that.
 
 ```sh
 nix run github:magenta-aps/clank
 ```
+
+This mounts the current directory into an ephemeral sandbox. You can run
+`opencode` or `claude` or `gemini`, but note that you will have to manually log
+in every time. See the next section for how to avoid that.
 
 ## 📦 Install Clank
 
@@ -84,15 +86,9 @@ export SCW_SECRET_KEY='<your-scaleway-secret-key>'  # https://vault.bitwarden.co
 export OPENCODE_MODEL='scaleway/qwen3.5-397b-a17b'  # https://models.dev/?search=scaleway/
 ```
 
-You can now `opencode`, which will automatically use the Scaleway model you
-specified:
-
-```sh
-nix run github:magenta-aps/clank -- opencode
-```
-
-You can also switch to a different model temporarily by pressing `Ctrl-p` while
-inside the opencode interface.
+You can now run `opencode` in Clank, which will automatically use the Scaleway
+model you specified. You can also switch to a different model temporarily by
+pressing `Ctrl-p` while inside the opencode interface.
 
 ### Claude Code
 
@@ -108,11 +104,7 @@ Add it to `~/.config/clank.sh` (on the host):
 export CLAUDE_CODE_OAUTH_TOKEN='<your-access-token-here>'
 ```
 
-You can now `claude` without having to log in every time:
-
-```sh
-nix run github:magenta-aps/clank -- claude
-```
+You can now run `claude` in Clank without having to log in every time.
 
 ### Gemini
 
@@ -122,8 +114,4 @@ Add the following to `~/.config/clank.sh` (on the host):
 export GEMINI_API_KEY='<your-google-api-key>'  # https://vault.bitwarden.com/#/vault?itemId=c9b60efc-e0b3-4a7a-a3d7-b43500d29310
 ```
 
-You can now `gemini` without having to log in every time:
-
-```sh
-nix run github:magenta-aps/clank -- gemini
-```
+You can now run `gemini` in Clank without having to log in every time.
