@@ -2,6 +2,7 @@
   environment.systemPackages = [
     pkgs.coreutils
     pkgs.git
+    pkgs.jq
   ];
 
   # Unlike SSH, these variables aren't passed from the host terminal, so
