@@ -35,7 +35,7 @@
         ];
       };
 
-      default = pkgs.python3Packages.buildPythonApplication {
+      clank = pkgs.python3Packages.buildPythonApplication {
         pname = "clank";
         version = "0.0.1";
         pyproject = true;
@@ -56,6 +56,7 @@
           ["--set" "CLANK_ROOT_PODMAN" self.packages.${system}.containerPodman.config.system.build.toplevel]
         ];
       };
+      default = self.packages.${system}.clank;
     });
   };
 }
