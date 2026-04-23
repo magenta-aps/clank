@@ -17,9 +17,15 @@
     loginShellInit =
       # fish
       ''
+        # Don't greet the user
+        set fish_greeting
         # Load environment variables mounted from the host's ~/.config/clank.sh
-        # and enter the mounted host/ directory.
-        source ~/.config/clank.sh
+        if test -s ~/.config/clank.sh
+          source ~/.config/clank.sh
+        else
+          echo "$(set_color --bold --background red)WARNING$(set_color normal): $(set_color cyan)~/.config/clank.sh$(set_color normal) not found! Automatic login will not work 🤖"
+        end
+        # Enter the mounted host/ directory
         cd host/
         # Run extra arguments if given on the command line, otherwise just
         # spawn an interactive fish shell.
