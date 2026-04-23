@@ -115,3 +115,10 @@ export GEMINI_API_KEY='<your-google-api-key>'  # https://vault.bitwarden.com/#/v
 ```
 
 You can now run `gemini` in Clank without having to log in every time.
+
+## 🧑‍🔧 Development
+
+```sh
+git clone https://github.com/magenta-aps/clank.git
+nix run ~/clank
+```
