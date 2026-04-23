@@ -99,6 +99,8 @@ def main(tmp: Path) -> None:
         "--mount=type=tmpfs,tmpfs-size=512M,destination=/run",
         "--mount=type=tmpfs,tmpfs-size=512M,destination=/run/wrappers,suid",
         "--volume=/nix/store:/nix/store:ro",
+        # /var/tmp should be disk-backed
+        "--volume=/var/tmp",
         "--systemd=always",
         "--rootfs",
         # Even though we mount / as tmpfs, podman apparently *has* to create a
