@@ -41,9 +41,10 @@ Through the power of Nix, you can run Clank without installing anything else.
 nix run github:magenta-aps/clank
 ```
 
-This mounts the current directory into an ephemeral sandbox. You can run
-`opencode` or `claude` or `gemini`, but note that you will have to manually log
-in every time. See the next section for how to avoid that.
+This mounts the current directory into an ephemeral sandbox, so maybe don't do
+it in a directory with sensitive data. You can run `opencode` or `claude` or
+`gemini`, but note that you will have to manually log in every time. See the
+next section for how to avoid that.
 
 ## 📦 Install Clank
 
