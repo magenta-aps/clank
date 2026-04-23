@@ -15,7 +15,7 @@
   programs.fish = {
     enable = true;
     generateCompletions = false; # *really* slow
-    interactiveShellInit =
+    shellInit =
       # fish
       ''
         # Don't greet the user
