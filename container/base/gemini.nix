@@ -26,7 +26,7 @@
         enforcedType = "gemini-api-key";
       };
 
-      model.name = "gemini-3.1-pro-preview";
+      model.name = "auto-gemini-3";
 
       # Load AGENTS.md instead of GEMINI.md
       context.fileName = "AGENTS.md";
