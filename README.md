@@ -1,4 +1,4 @@
-# clank
+# 🤖 Clank
 
 `clank` is an AI sandbox, pre-configured to quickly start using AI.
 
@@ -8,186 +8,101 @@
 > allowed to use it and fork it, but we may not be able to help you if you
 > don't work at Magenta.
 
-## Quick Start
+## ⚡ Quick Start
 
-### Linux Install (non-NixOS)
+### ❄️ Get Nix
 
-Install the [Nix package manager](https://nixos.org/download/) on your distro.
-This is just a package manager, not a full OS switch:
+Clank is build using the Nix package manager.
 
-> **Multi-user (requires sudo)**
->
-> ```sh
-> sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
-> ```
-
-> **Fedora**
->
-> Allegedly, the multi-user install above does not work on SELinux distros, in
-> that case you can install Nix as a Fedora package instead:
->
-> ```sh
-> sudo dnf install nix nix-daemon
-> sudo systemctl enable --now nix-daemon
-> ```
-
-Reopen your terminal, then enable flakes if not already enabled:
+#### Debian / Ubuntu
 
 ```sh
-mkdir -p ~/.config/nix
-echo 'experimental-features = nix-command flakes' >> ~/.config/nix/nix.conf
+sudo apt install -y nix uidmap
+sudo usermod -aG nix-users $USER
+echo 'experimental-features = nix-command flakes' | sudo tee -a /etc/nix/nix.conf
 ```
 
-Run the following for a persistent install:
+**At this point you need to log out and in again to effectuate the change to
+your user's groups.** Yeah, it's cringe.
+
+#### Fedora
 
 ```sh
-nix profile add github:magenta-aps/clank
+sudo dnf install nix nix-daemon
+sudo systemctl enable --now nix-daemon
+# TODO: do you need to log in and out?
 ```
 
-Alternatively, you can run the latest version directly from GitHub, without
-installing it:
+### 🚀 Try Clank
+
+Through the power of Nix, you can run Clank without installing anything else.
+But note that you will have to manually log in every time. See the next section
+for how to avoid that.
 
 ```sh
 nix run github:magenta-aps/clank
 ```
 
-If everything succeeded, you should be able to boot into your sandbox like so:
+### ⚙️ Configure Providers
+
+### Claude Code
+
+Create an access token:
 
 ```sh
-clank
+clank claude setup-token
 ```
 
-This boots into a NixOS container. To set up your favorite AI coding assistant,
-use one (or more) of the following links:
-
-- [Set up Claude Code](#set-up-claude-code)
-- [Set up Open Code with Scaleway](#set-up-open-code-with-scaleway)
-- [Set up Gemini CLI](#set-up-gemini-cli)
-
-### NixOS Install
-
-```nix
-{
-  inputs = {
-    clank = {
-      url = "github:magenta-aps/clank";
-      # inputs.nixpkgs.follows = "nixpkgs";
-    };
-  };
-}
-```
-
-```nix
-{clank, pkgs}: {
-  environment.systemPackages = [
-    clank.packages.${pkgs.system}.app
-  ];
-}
-```
-
-### Set up Claude Code
-
-Prerequisites:
-
-- [Install `clank`](#quick-start)
-- Have a [Claude account](https://claude.ai)
-
-Boot into `clank`:
-
-```sh
-clank
-```
-
-Inside `clank`, run the following and follow the on-screen instructions to
-create an access token, linked with your Claude account:
-
-```sh
-claude setup-token
-```
-
-You should now have a Claude access token. Copy it.
-
-Create a file in `~/.config/clank.sh` (on the host machine, not inside clank)
-containing the following:
+Add it to `~/.config/clank.sh` (on the host):
 
 ```sh
 export CLAUDE_CODE_OAUTH_TOKEN=<your-access-token-here>
 ```
 
-Re-open `clank`. You should now be able to start Claude Code with your account,
-without having to log in every time.
-
-### Set up Open Code with Scaleway
-
-Prerequisites:
-
-- [Install `clank`](#quick-start)
-- Have a [Scaleway account](https://www.scaleway.com/) with access to [Scaleway Generative APIs](https://www.scaleway.com/en/generative-apis/)
-
-Create or retrieve your Scaleway secret key from the [Scaleway
-console](https://console.scaleway.com/iam/api-keys).
-
-Add the following to `~/.config/clank.sh` (on the host machine, not inside
-clank):
+You can now `claude` without having to log in every time:
 
 ```sh
-# Scaleway Project ID for Magenta (if you're not a Magenta employee you need to set up a project first)
-export SCW_PROJECT_ID='594a268d-8577-4b86-a983-be375e13e197'
-export SCW_SECRET_KEY='<your-scaleway-secret-key>'
-export OPENCODE_MODEL='scaleway/<your-model-id>'
+clank claude
 ```
 
-`OPENCODE_MODEL` is an identifier for the specific model to use, it has the
-format `provider/model_id`. You can [browse supported Scaleway
-models](https://models.dev/?search=scaleway/). For instance, any of the
-following work:
+### Open Code (Scaleway)
 
-- `scaleway/qwen3.5-397b-a17b`
-- `scaleway/llama-3.3-70b-instruct`
-
-Boot (or re-open) `clank`:
+Add the following to `~/.config/clank.sh` (on the host):
 
 ```sh
-clank
+export SCW_PROJECT_ID='594a268d-8577-4b86-a983-be375e13e197'  # Magenta's 'AI' Project ID
+export SCW_SECRET_KEY='<your-scaleway-secret-key>'  # See 'TODO' in Bitwarden
+export OPENCODE_MODEL='scaleway/qwen3.5-397b-a17b'  # https://models.dev/?search=scaleway/
 ```
 
-You should now be able to start Open Code, which will automatically use the
-Scaleway model you specified:
+You can now `opencode`, which will automatically use the Scaleway model you
+specified:
 
 ```sh
-opencode
+clank opencode
 ```
 
 You can also switch to a different model temporarily by pressing `Ctrl-p` while
 inside the opencode interface.
 
-### Set up Gemini CLI
+### Gemini
 
-TODO
-
-## Usage
-
-Prerequisites:
-
-- [Complete the quick start section](#quick-start)
-
-Run clank:
+Add the following to `~/.config/clank.sh` (on the host):
 
 ```sh
-clank
+# TODO
 ```
 
-This starts a podman container running NixOS, with some essential packages
-pre-installed, as well as AI coding assistants (Claude Code and Open Code).
+### 📦 Install Clank
 
-From here, you can launch your coding assistant, for instance:
+#### NixOS
 
-```sh
-claude
+```nix
+
 ```
 
-## Updating Clank (non-NixOs)
+#### Everything Else
 
 ```sh
-nix profile upgrade clank
+
 ```
