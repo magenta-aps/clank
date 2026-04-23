@@ -14,11 +14,15 @@
   programs.fish = {
     enable = true;
     generateCompletions = false; # *really* slow
-    loginShellInit =
+    interactiveShellInit =
       # fish
       ''
         # Don't greet the user
         set fish_greeting
+      '';
+    loginShellInit =
+      # fish
+      ''
         # Load environment variables mounted from the host's ~/.config/clank.sh
         if test -s ~/.config/clank.sh
           source ~/.config/clank.sh
