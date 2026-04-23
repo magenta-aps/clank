@@ -4,6 +4,7 @@
     ./gemini.nix
     ./hardware.nix
     ./opencode.nix
+    ./podman.nix
     ./shell.nix
   ];
 

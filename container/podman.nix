@@ -49,6 +49,11 @@
     };
   };
 
+  # Ensure /var/lib/shared exists, even if it wasn't mounted from the host
+  systemd.tmpfiles.rules = [
+    "d /var/lib/shared 0700 root root -"
+  ];
+
   # Add default image mirrors. NixOS generates registries.conf in the
   # deprecated version 1 format so we overwrite the entire file.
   # https://github.com/containers/image/blob/main/docs/containers-registries.conf.5.md

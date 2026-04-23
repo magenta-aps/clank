@@ -6,8 +6,7 @@ from tempfile import TemporaryDirectory
 
 # Passed by buildPythonApplication's makeWrapperArgs in flake.nix
 CLANK_EMPTY_DIRECTORY = os.environ["CLANK_EMPTY_DIRECTORY"]
-CLANK_ROOT_DOCKER = os.environ["CLANK_ROOT_DOCKER"]
-CLANK_ROOT_PODMAN = os.environ["CLANK_ROOT_PODMAN"]
+CLANK_ROOT = os.environ["CLANK_ROOT"]
 
 
 def cli() -> None:
@@ -22,9 +21,9 @@ def main(tmp: Path) -> None:
         "--rm",
         "-it",
         # Kinda yolo, but you need at least `--device=/dev/fuse`, and
-        # `--cap-add=SYS_ADMIN,NET_ADMIN,NET_RAW,mknod` to make podman/docker
-        # compose work inside the container anyway. Claude tried to break out
-        # for like half an hour without success, so it's probably fine.
+        # `--cap-add=SYS_ADMIN,NET_ADMIN,NET_RAW,mknod` to make podman compose
+        # work inside the container anyway. Claude tried to break out for like
+        # half an hour without success, so it's probably fine.
         # https://www.redhat.com/en/blog/podman-inside-container,
         "--privileged",
         "--security-opt=label=disable",
@@ -36,6 +35,11 @@ def main(tmp: Path) -> None:
         "--no-hosts",
         # Mount current working directory into the container
         "--volume=./:/root/host:rw",
+        # Root is tmpfs. Mount Podman's data directory to a disk-backed
+        # anonymous volume to avoid exploding ram usage.
+        "--volume=/var/lib/containers/storage",
+        # /var/tmp should be disk-backed (root is tmpfs)
+        "--volume=/var/tmp",
     ]
 
     home = Path.home()
@@ -61,29 +65,11 @@ def main(tmp: Path) -> None:
             f"--volume={home}/.config/git:/root/.config/git:ro",
         ]
 
-    # Use Podman/Docker in the container depending on which one is installed on
-    # the host. Default to Podman in case neither is installed.
-    if Path("/var/lib/docker").exists():
-        root = CLANK_ROOT_DOCKER
+    # Mount host's Podman build/image cache to make builds and pulls faster
+    if home.joinpath(".local/share/containers/storage").exists():
         command += [
-            # Root is tmpfs. Mount Docker's data directory to a disk-backed
-            # anonymous volume to avoid exploding ram usage.
-            "--volume=/var/lib/docker",
-            # Mount host's build/image cache to make builds and pulls faster
-            # TODO
+            f"--volume={home}/.local/share/containers/storage:/var/lib/shared:ro",
         ]
-    else:
-        root = CLANK_ROOT_PODMAN
-        command += [
-            # Root is tmpfs. Mount Podman's data directory to a disk-backed
-            # anonymous volume to avoid exploding ram usage.
-            "--volume=/var/lib/containers/storage",
-        ]
-        if home.joinpath(".local/share/containers/storage").exists():
-            command += [
-                # Mount host's build/image cache to make builds and pulls faster
-                f"--volume={home}/.local/share/containers/storage:/var/lib/shared:ro",
-            ]
 
     command += [
         # NixOS just needs an /init and /nix/store to start, but podman needs
@@ -99,8 +85,6 @@ def main(tmp: Path) -> None:
         "--mount=type=tmpfs,tmpfs-size=512M,destination=/run",
         "--mount=type=tmpfs,tmpfs-size=512M,destination=/run/wrappers,suid",
         "--volume=/nix/store:/nix/store:ro",
-        # /var/tmp should be disk-backed
-        "--volume=/var/tmp",
         "--systemd=always",
         "--rootfs",
         # Even though we mount / as tmpfs, podman apparently *has* to create a
@@ -109,7 +93,7 @@ def main(tmp: Path) -> None:
         # /nix/store and thus read-only. :O mounts it as an overlay on tmpfs,
         # which makes it writable [1].
         f"{CLANK_EMPTY_DIRECTORY}:O",
-        f"{root}/init",
+        f"{CLANK_ROOT}/init",
     ]
 
     # Prime the podman pause process to avoid AppArmor errors due to user
@@ -128,9 +112,9 @@ def main(tmp: Path) -> None:
 
 # [1]
 # You may wonder why we need to make / tmpfs if we are using an overlayfs
-# backed by tmpfs anyway. The reason is that podman/docker also uses overlayfs
-# to run containers, and the Linux kernal doesn't support using an overlayfs as
-# an upperdir for an overlayfs. Docker daemon syscall:
+# backed by tmpfs anyway. The reason is that podman also uses overlayfs to run
+# containers, and the Linux kernal doesn't support using an overlayfs as an
+# upperdir for an overlayfs. Docker daemon syscall:
 #
 #
 #   mount(
@@ -155,8 +139,8 @@ def main(tmp: Path) -> None:
 # limitation, but it is buggy (content of deleted directory still visible).
 #
 # All of this is of course mitigated by the fact that we use anonymous volumes
-# for podman/docker storage, but in general it seems like a bad time to use
-# overlayfs as the root filesystem.
+# for podman storage, but in general it seems like a bad time to use overlayfs
+# as the root filesystem.
 #
 # https://github.com/containers/fuse-overlayfs/issues/324
 # https://github.com/containers/fuse-overlayfs/issues/425

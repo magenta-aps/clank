@@ -20,19 +20,9 @@
     packages = forAllSystems (system: let
       pkgs = nixpkgs.legacyPackages.${system};
     in {
-      containerDocker = nixpkgs.lib.nixosSystem {
+      container = nixpkgs.lib.nixosSystem {
         system = system;
-        modules = [
-          ./container/base
-          ./container/docker.nix
-        ];
-      };
-      containerPodman = nixpkgs.lib.nixosSystem {
-        system = system;
-        modules = [
-          ./container/base
-          ./container/podman.nix
-        ];
+        modules = [./container];
       };
 
       clank = pkgs.python3Packages.buildPythonApplication {
@@ -52,8 +42,7 @@
 
         makeWrapperArgs = builtins.concatLists [
           ["--set" "CLANK_EMPTY_DIRECTORY" "${pkgs.emptyDirectory}"]
-          ["--set" "CLANK_ROOT_DOCKER" self.packages.${system}.containerDocker.config.system.build.toplevel]
-          ["--set" "CLANK_ROOT_PODMAN" self.packages.${system}.containerPodman.config.system.build.toplevel]
+          ["--set" "CLANK_ROOT" self.packages.${system}.container.config.system.build.toplevel]
         ];
       };
       default = self.packages.${system}.clank;
