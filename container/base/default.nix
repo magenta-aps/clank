@@ -1,6 +1,7 @@
 {lib, ...}: {
   imports = [
     ./claude.nix
+    ./gemini.nix
     ./hardware.nix
     ./opencode.nix
     ./shell.nix

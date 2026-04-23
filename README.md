@@ -62,7 +62,7 @@ use one (or more) of the following links:
 
 - [Set up Claude Code](#set-up-claude-code)
 - [Set up Open Code with Scaleway](#set-up-open-code-with-scaleway)
-- Set up Gemini (TODO)
+- [Set up Gemini CLI](#set-up-gemini-cli)
 
 ### NixOS Install
 
@@ -160,6 +160,10 @@ opencode
 
 You can also switch to a different model temporarily by pressing `Ctrl-p` while
 inside the opencode interface.
+
+### Set up Gemini CLI
+
+TODO
 
 ## Usage
 
