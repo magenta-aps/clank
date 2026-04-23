@@ -44,7 +44,7 @@
         files = ["AGENTS.md"];
       };
       # Default to the best model
-      model = "opus";
+      model = "claude-opus-4-7";
       # yolo
       permissions = {
         defaultMode = "bypassPermissions";

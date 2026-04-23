@@ -12,7 +12,8 @@
 
 ### ❄️ Get Nix
 
-Clank is build using the Nix package manager.
+Clank is build using the [Nix package
+manager](https://nixos.org/download/#nix-install-linux).
 
 #### Debian / Ubuntu
 
@@ -40,10 +41,6 @@ for how to avoid that.
 
 ```sh
 nix run github:magenta-aps/clank
-# or
-nix run github:magenta-aps/clank claude
-# or
-nix run github:magenta-aps/clank opencode
 ```
 
 ## 📦 Install Clank
@@ -72,32 +69,10 @@ nix run github:magenta-aps/clank opencode
 #### Everything Else
 
 ```sh
-nix profile --refresh install github:magenta-aps/clank#clank
-# and later
-nix profile --refresh upgrade packages.x86_64-linux.clank
+alias clank='nix run github:magenta-aps/clank --'
 ```
 
 ## ⚙️ Configure Providers
-
-### Claude Code
-
-Create an access token:
-
-```sh
-clank claude setup-token
-```
-
-Add it to `~/.config/clank.sh` (on the host):
-
-```sh
-export CLAUDE_CODE_OAUTH_TOKEN='<your-access-token-here>'
-```
-
-You can now `claude` without having to log in every time:
-
-```sh
-clank claude
-```
 
 ### Open Code (Scaleway)
 
@@ -113,11 +88,31 @@ You can now `opencode`, which will automatically use the Scaleway model you
 specified:
 
 ```sh
-clank opencode
+nix run github:magenta-aps/clank -- opencode
 ```
 
 You can also switch to a different model temporarily by pressing `Ctrl-p` while
 inside the opencode interface.
+
+### Claude Code
+
+Create an access token:
+
+```sh
+nix run github:magenta-aps/clank -- claude setup-token
+```
+
+Add it to `~/.config/clank.sh` (on the host):
+
+```sh
+export CLAUDE_CODE_OAUTH_TOKEN='<your-access-token-here>'
+```
+
+You can now `claude` without having to log in every time:
+
+```sh
+nix run github:magenta-aps/clank -- claude
+```
 
 ### Gemini
 
@@ -130,5 +125,5 @@ export GEMINI_API_KEY='<your-google-api-key>'  # https://vault.bitwarden.com/#/v
 You can now `gemini` without having to log in every time:
 
 ```sh
-clank gemini
+nix run github:magenta-aps/clank -- gemini
 ```
