@@ -74,17 +74,17 @@ def main(tmp: Path) -> None:
     command += [
         # NixOS just needs an /init and /nix/store to start, but podman needs
         # *something*. Instead of a container image, `--rootfs` tells podman to
-        # use the empty directory as container file system. We mount an
-        # empty tmpfs root and bind mount the host's /nix/store. The command is
-        # /init from the built NixOS system, which symlinks the required files
-        # from /nix/store into / and starts systemd. `nosuid` is the default
-        # for tmpfs mounts, so we have to remount /run/wrappers with `suid`.
+        # use the empty directory as container file system. We mount an empty
+        # tmpfs root and bind mount the host's /nix. The command is /init from
+        # the built NixOS system, which symlinks the required files from
+        # /nix/store into / and starts systemd. `nosuid` is the default for
+        # tmpfs mounts, so we have to remount /run/wrappers with `suid`.
         # https://discourse.nixos.org/t/running-nix-os-containers-directly-from-the-store-with-podman/29220
         # https://github.com/metaspace/container-nixos/tree/main
         "--mount=type=tmpfs,tmpfs-size=512M,destination=/",
         "--mount=type=tmpfs,tmpfs-size=512M,destination=/run",
         "--mount=type=tmpfs,tmpfs-size=512M,destination=/run/wrappers,suid",
-        "--volume=/nix/store:/nix/store:ro",
+        "--volume=/nix:/nix:ro",
         "--systemd=always",
         "--rootfs",
         # Even though we mount / as tmpfs, podman apparently *has* to create a
