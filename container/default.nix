@@ -26,5 +26,7 @@
     }
   ];
 
+  nix.settings.experimental-features = ["nix-command" "flakes"];
+
   system.stateVersion = lib.trivial.release; # No need to read any comments!
 }
