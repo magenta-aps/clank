@@ -20,7 +20,7 @@
       privacy.usageStatisticsEnabled = false;
       telemetry.enabled = false;
 
-      # do not prompt for API key every time, just read from env var
+      # Do not prompt for API key every time, just read from env var
       security.auth = {
         selectedType = "gemini-api-key";
         enforcedType = "gemini-api-key";
@@ -38,4 +38,13 @@
   in [
     "C /root/.gemini/settings.json 0600 root root - ${geminiSettingsJson}"
   ];
+
+  # The .gemini directory is persisted to allow `gemini --resume` and changes
+  # to settings across Clank invocations. This means that the settings.json is
+  # only copied the first time.
+  fileSystems."/root/.gemini" = {
+    device = "/persist/root/.gemini";
+    fsType = "none";
+    options = ["bind"];
+  };
 }

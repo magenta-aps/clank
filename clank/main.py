@@ -3,6 +3,7 @@ import subprocess
 import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from uuid import uuid4
 
 # Passed by buildPythonApplication's makeWrapperArgs in flake.nix
 CLANK_EMPTY_DIRECTORY = os.environ["CLANK_EMPTY_DIRECTORY"]
@@ -20,6 +21,7 @@ def main(tmp: Path) -> None:
         "run",
         "--rm",
         "-it",
+        f"--name=clank-{uuid4()}",
         # Kinda yolo, but you need at least `--device=/dev/fuse`, and
         # `--cap-add=SYS_ADMIN,NET_ADMIN,NET_RAW,mknod` to make podman compose
         # work inside the container anyway. Claude tried to break out for like
@@ -29,69 +31,64 @@ def main(tmp: Path) -> None:
         "--security-opt=label=disable",
         "--security-opt=apparmor=unconfined",
         "--volume=/proc/sys:/proc/sys:rw",
-        # Do not create the /etc/hostname file in the container
+        # Do not create /etc/hostname in the container
         "--no-hostname",
-        # Do not modify the /etc/hosts file in the container
-        "--no-hosts",
         # Mount current working directory into the container
         "--volume=./:/root/host:rw",
-        # Root is tmpfs. Mount Podman's data directory to a disk-backed
-        # anonymous volume to avoid exploding ram usage.
-        "--volume=/var/lib/containers/storage",
-        # /var/tmp should be disk-backed (root is tmpfs)
-        "--volume=/var/tmp",
+        # Root is tmpfs, but some things need to be on disk, or we will quickly
+        # run out of ram. Bind mounts are defined in the NixOS configuration.
+        "--volume=/disk",
+        # Mount a volume shared amongst all Clank instances to /persist. Bind
+        # mounts are defined in the NixOS configuration.
+        "--volume=clank-persist:/persist",
     ]
 
     home = Path.home()
 
-    # clank.sh is the way to inject environment variables into the container.
-    # You could also use it to run arbitrary commands on startup.
+    # Mount host's git config to ensure commits are done by the right author
+    if home.joinpath(".config/git").exists():
+        command += [
+            f"--volume={home}/.config/git:/root/.config/git:ro",
+        ]
+
+    # We can use the host's images if it also uses Podman
+    if home.joinpath(".local/share/containers/storage").exists():
+        command += [
+            f"--volume={home}/.local/share/containers/storage:/var/lib/shared:ro",
+        ]
+
+    # ~/.config/clank.sh is how we inject environment variables into the
+    # container since all --env are gobbled by systemd (/init). You could also
+    # use it to run arbitrary commands on startup.
     if home.joinpath(".config/clank.sh").exists():
         command += [
             f"--volume={home}/.config/clank.sh:/root/.config/clank.sh:ro",
         ]
 
     # Whatever extra arguments were given on the command line are run in the
-    # container, e.g. `clank opencode --model=scaleway/qwen3.5-397b-a17b`.
+    # container, e.g. `clank opencode --model=scaleway/qwen3.5-397b-a17b`. We
+    # have to do it in this roundabout way because the command argument to
+    # `podman run` has to be systemd (/init).
     command_sh = tmp.joinpath("command.sh")
     command_sh.write_text(" ".join(sys.argv[1:]))
     command += [
         f"--volume={command_sh}:/command.sh:ro",
     ]
 
-    # Mount git config to ensure commits are done by the right author
-    if home.joinpath(".config/git").exists():
-        command += [
-            f"--volume={home}/.config/git:/root/.config/git:ro",
-        ]
-
-    # Mount host's Podman build/image cache to make builds and pulls faster
-    if home.joinpath(".local/share/containers/storage").exists():
-        command += [
-            f"--volume={home}/.local/share/containers/storage:/var/lib/shared:ro",
-        ]
-
     command += [
-        # NixOS just needs an /init and /nix/store to start, but podman needs
-        # *something*. Instead of a container image, `--rootfs` tells podman to
-        # use the empty directory as container file system. We mount an empty
-        # tmpfs root and bind mount the host's /nix. The command is /init from
-        # the built NixOS system, which symlinks the required files from
-        # /nix/store into / and starts systemd. `nosuid` is the default for
-        # tmpfs mounts, so we have to remount /run/wrappers with `suid`.
-        # https://discourse.nixos.org/t/running-nix-os-containers-directly-from-the-store-with-podman/29220
-        # https://github.com/metaspace/container-nixos/tree/main
+        # NixOS just needs an /init and /nix/store to start, so we mount an
+        # empty tmpfs on / and bind mount the host's /nix. /init symlinks the
+        # required files from /nix/store into / and starts systemd.
         "--mount=type=tmpfs,tmpfs-size=512M,destination=/",
-        "--mount=type=tmpfs,tmpfs-size=512M,destination=/run",
-        "--mount=type=tmpfs,tmpfs-size=512M,destination=/run/wrappers,suid",
         "--volume=/nix:/nix:ro",
         "--systemd=always",
-        "--rootfs",
-        # Even though we mount / as tmpfs, podman apparently *has* to create a
-        # symlink `/etc/mtab -> /proc/mounts`, and apparently before the tmpfs
-        # root is mounted. This fails because CLANK_EMPTY_DIRECTORY is in
+        # Podman won't run without a container image, but `--rootfs` tells it
+        # to use the empty directory as container file system instead. Podman
+        # apparently creates a symlink `/etc/mtab -> /proc/mounts` *before* the
+        # tmpfs root is mounted. This fails because CLANK_EMPTY_DIRECTORY is in
         # /nix/store and thus read-only. :O mounts it as an overlay on tmpfs,
-        # which makes it writable [1].
+        # which makes it writable.
+        "--rootfs",
         f"{CLANK_EMPTY_DIRECTORY}:O",
         f"{CLANK_ROOT}/init",
     ]
@@ -108,41 +105,3 @@ def main(tmp: Path) -> None:
         # powered off.
         if e.returncode not in (0, 130):
             raise
-
-
-# [1]
-# You may wonder why we need to make / tmpfs if we are using an overlayfs
-# backed by tmpfs anyway. The reason is that podman also uses overlayfs to run
-# containers, and the Linux kernal doesn't support using an overlayfs as an
-# upperdir for an overlayfs. Docker daemon syscall:
-#
-#
-#   mount(
-#       "overlay",
-#       "/tmp/containerd-mount915074888",
-#       "overlay",
-#       0,
-#       "workdir=/var/lib/docker/containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots/6/work,
-#        upperdir=/var/lib/docker/containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots/6/fs,
-#        lowerdir=/var/lib/docker/containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots/2/fs,userxattr,
-#        index=off",
-#   ) = -1 EINVAL (Invalid argument)
-#
-#
-# Associated dmesg:
-#
-#
-#   overlay: filesystem on /var/lib/docker/containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots/6/work not supported as upperdir
-#
-#
-# Podman uses the userspace fuse-overlayfs to avoid the Linux kernel
-# limitation, but it is buggy (content of deleted directory still visible).
-#
-# All of this is of course mitigated by the fact that we use anonymous volumes
-# for podman storage, but in general it seems like a bad time to use overlayfs
-# as the root filesystem.
-#
-# https://github.com/containers/fuse-overlayfs/issues/324
-# https://github.com/containers/fuse-overlayfs/issues/425
-# https://github.com/containers/fuse-overlayfs/issues/444
-# https://github.com/containers/podman/issues/3021

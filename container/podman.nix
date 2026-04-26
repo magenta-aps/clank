@@ -38,18 +38,28 @@
         compose_warning_logs = false;
       };
     };
+    # https://github.com/containers/storage/blob/main/docs/containers-storage.conf.5.md
     storage.settings = {
-      storage.options = {
-        # Use host's build/image cache to make builds and pulls faster
-        # https://www.redhat.com/en/blog/image-stores-podman
-        additionalimagestores = [
-          "/var/lib/shared"
-        ];
+      storage = {
+        # Root is tmpfs, but building images or running containers may require
+        # a lot of space. Use (per-Clank) disk for that. Once an image is
+        # built, it is saved to the (persistent and shared) imagestore.
+        graphroot = "/disk/graphroot";
+        imagestore = "/persist/imagestore";
+        options = {
+          # We can use the host's images if it also uses Podman. This is
+          # mounted (read-only) in main.oy.
+          # https://www.redhat.com/en/blog/image-stores-podman
+          additionalimagestores = [
+            "/var/lib/shared"
+          ];
+        };
       };
     };
   };
 
-  # Ensure /var/lib/shared exists, even if it wasn't mounted from the host
+  # /var/lib/shared isn't mounted if the host doesn't use Podman. Ensure an
+  # empty directory exists to avoid errors.
   systemd.tmpfiles.rules = [
     "d /var/lib/shared 0700 root root -"
   ];

@@ -12,26 +12,19 @@
 
 ### ❄️ Get Nix
 
-Clank is build using the [Nix package
+Clank is built using the [Nix package
 manager](https://nixos.org/download/#nix-install-linux).
 
 #### Debian / Ubuntu
 
 ```sh
 sudo apt install -y nix uidmap
-sudo usermod -aG nix-users $USER
 echo 'experimental-features = nix-command flakes' | sudo tee -a /etc/nix/nix.conf
+sudo usermod -aG nix-users $USER
 ```
 
 **At this point you need to log out and in again to effectuate the change to
-your user's groups.** Yeah, it's cringe.
-
-#### Fedora
-
-```sh
-sudo dnf install nix nix-daemon
-sudo systemctl enable --now nix-daemon
-```
+your user's groups.**
 
 ### 🚀 Try Clank
 
@@ -122,4 +115,12 @@ You can now run `gemini` in Clank without having to log in every time.
 ```sh
 git clone https://github.com/magenta-aps/clank.git
 nix run ~/clank
+```
+
+## 🗑️ Remove All State
+
+```sh
+rm ~/.config/clank.sh
+nix run nixpkgs#podman -- rm --force --filter 'name=^clank'
+nix run nixpkgs#podman -- volume rm clank-persist
 ```

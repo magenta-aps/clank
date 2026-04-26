@@ -22,4 +22,18 @@
   in [
     "C /root/.config/opencode/opencode.json 0600 root root - ${opencodeJson}"
   ];
+
+  # ~/.config/opencode/ and ~/.local/share/opencode/ are persisted to allow
+  # `opencode --session` and changes to settings across Clank invocations. This
+  # means that the opencode.json settings is only copied the first time.
+  fileSystems."/root/.config/opencode" = {
+    device = "/persist/root/.config/opencode";
+    fsType = "none";
+    options = ["bind"];
+  };
+  fileSystems."/root/.local/share/opencode" = {
+    device = "/persist/root/.local/share/opencode";
+    fsType = "none";
+    options = ["bind"];
+  };
 }

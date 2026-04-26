@@ -21,8 +21,8 @@
     CLAUDE_CODE_DISABLE_AUTO_MEMORY = "1";
   };
 
-  # https://code.claude.com/docs/en/settings
   systemd.tmpfiles.rules = let
+    # https://code.claude.com/docs/en/settings#global-config-settings
     claudeJson = pkgs.writeText "claude.json" (builtins.toJSON {
       bypassPermissionsModeAccepted = true; # yolo
       # Claude Code asks us to log in during onboarding. We want to use
@@ -36,6 +36,7 @@
       };
       theme = "dark";
     });
+    # https://code.claude.com/docs/en/settings
     claudeSettingsJson = pkgs.writeText "claude-settings.json" (builtins.toJSON {
       # Disable commercials in git commits
       attribution = {
@@ -58,4 +59,14 @@
     "C /root/.claude.json 0600 root root - ${claudeJson}"
     "C /root/.claude/settings.json 0600 root root - ${claudeSettingsJson}"
   ];
+
+  # The .claude directory is persisted to allow `claude --resume` and changes
+  # to settings across Clank invocations. This means that the settings.json is
+  # only copied the first time.
+  # https://code.claude.com/docs/en/claude-directory#application-data
+  fileSystems."/root/.claude" = {
+    device = "/persist/root/.claude";
+    fsType = "none";
+    options = ["bind"];
+  };
 }
