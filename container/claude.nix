@@ -11,10 +11,11 @@
       # AGENTS.md", i.e. "stop requiring me to put ads for Anthropic in my
       # repo". Don't let them win.
       # https://github.com/anthropics/claude-code/issues/6235
-      postPatch = ''
-        ${previousAttrs.postPatch}
-        substituteInPlace cli.js \
-          --replace-fail "CLAUDE.md" "AGENTS.md"
+      postInstall = ''
+        ${previousAttrs.postInstall or ""}
+        # Claude Code is a binary file, but luckily the strings `CLAUDE.md` and
+        # `AGENTS.md` are of the same length 😎
+        sed -i -e 's/CLAUDE\.md/AGENTS\.md/g' $out/bin/.claude-wrapped
       '';
     }))
   ];
