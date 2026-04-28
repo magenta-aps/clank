@@ -1,13 +1,23 @@
 {pkgs, ...}: {
-  environment.systemPackages = [
-    pkgs.claude-code
-  ];
-
   # Cringe
   nixpkgs.config.allowUnfreePredicate = pkg:
     builtins.elem (pkgs.lib.getName pkg) [
       "claude-code"
     ];
+
+  environment.systemPackages = [
+    (pkgs.claude-code.overrideAttrs (previousAttrs: {
+      # The most upvoted issue on Claude Code: "Feature Request: Support
+      # AGENTS.md", i.e. "stop requiring me to put ads for Anthropic in my
+      # repo". Don't let them win.
+      # https://github.com/anthropics/claude-code/issues/6235
+      postPatch = ''
+        ${previousAttrs.postPatch}
+        substituteInPlace cli.js \
+          --replace-fail "CLAUDE.md" "AGENTS.md"
+      '';
+    }))
+  ];
 
   environment.variables = {
     # Allow bypassPermissions as root
@@ -42,10 +52,6 @@
       attribution = {
         commit = "";
         pr = "";
-      };
-      # Load AGENTS.md instead of CLAUDE.md
-      customInstructions = {
-        files = ["AGENTS.md"];
       };
       # Default to the best model
       model = "claude-opus-4-7";
