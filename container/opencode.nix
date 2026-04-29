@@ -32,4 +32,9 @@
     fsType = "none";
     options = ["bind"];
   };
+  fileSystems."/root/.local/state/opencode" = {
+    device = "/persist/root/.local/state/opencode";
+    fsType = "none";
+    options = ["bind"];
+  };
 }
