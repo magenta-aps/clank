@@ -8,6 +8,8 @@
 > allowed to use it and fork it, but we may not be able to help you if you
 > don't work at Magenta.
 
+We would like feedback from your experience with using clank, please write your complaints in [this hedgedoc](https://hedgedoc.magenta.dk/-BdNEa-KQ0C2hfocolAA4g?both).
+
 ## ⚡ Quick Start
 
 ### ❄️ Get Nix
