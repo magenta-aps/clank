@@ -9,12 +9,11 @@
   systemd.tmpfiles.rules = let
     opencodeJson = pkgs.writeText "opencode.json" (builtins.toJSON {
       autoupdate = false;
-      model = "{env:OPENCODE_MODEL}";
       provider = {
         scaleway = {
           options = {
-            apiKey = "{env:SCW_SECRET_KEY}";
-            baseURL = "https://api.scaleway.ai/{env:SCW_PROJECT_ID}/v1";
+            # Magenta's "AI" Scaleway project
+            baseURL = "https://api.scaleway.ai/594a268d-8577-4b86-a983-be375e13e197/v1";
           };
         };
       };
@@ -23,9 +22,6 @@
     "C /root/.config/opencode/opencode.json 0600 root root - ${opencodeJson}"
   ];
 
-  # ~/.config/opencode/ and ~/.local/share/opencode/ are persisted to allow
-  # `opencode --session` and changes to settings across Clank invocations. This
-  # means that the opencode.json settings is only copied the first time.
   fileSystems."/root/.config/opencode" = {
     device = "/persist/root/.config/opencode";
     fsType = "none";
