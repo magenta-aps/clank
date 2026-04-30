@@ -59,4 +59,11 @@
     enable = true;
     defaultEditor = true;
   };
+
+  # Persist fish history for a nicer experience
+  fileSystems."/root/.local/share/fish" = {
+    device = "/persist/root/.local/share/fish";
+    fsType = "none";
+    options = ["bind"];
+  };
 }
