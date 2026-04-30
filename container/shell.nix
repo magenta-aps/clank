@@ -27,9 +27,6 @@
         # Load environment variables mounted from the host's ~/.config/clank.sh
         if test -s ~/.config/clank.sh
           source ~/.config/clank.sh
-        else
-          echo "$(set_color --bold --background red)WARNING$(set_color normal): $(set_color cyan)~/.config/clank.sh$(set_color normal) not found! Automatic login will not work 🤖"
-          read --prompt-str 'Press enter to continue..'
         end
         # Enter the mounted host/ directory
         cd host/
