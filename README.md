@@ -94,6 +94,12 @@ sessions. In this case, run `claude setup-token` and add the resulting token to
 export CLAUDE_CODE_OAUTH_TOKEN='<your-access-token-here>'
 ```
 
+### 🧭 Meridian (Claude in OpenCode)
+
+[Meridian](https://github.com/rynfar/meridian) lets OpenCode use your Claude
+subscription. Log in with `claude` (see above), then pick a Claude model in
+`opencode`.
+
 ## 💡 Tips and Tricks
 
 ### OpenCode Web

@@ -17,7 +17,16 @@
   systemd.tmpfiles.rules = let
     opencodeJson = pkgs.writeText "opencode.json" (builtins.toJSON {
       autoupdate = false;
+      # Use the Claude subscription via the local Meridian proxy (meridian.nix).
+      # apiKey is an unused placeholder OpenCode requires.
+      plugin = ["${pkgs.meridian}/lib/meridian/plugin/meridian.ts"];
       provider = {
+        anthropic = {
+          options = {
+            baseURL = "http://127.0.0.1:3456";
+            apiKey = "meridian";
+          };
+        };
         scaleway = {
           options = {
             # Magenta's "AI" Scaleway project
