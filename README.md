@@ -101,6 +101,12 @@ to display a live CO2 estimate in the status line and persist each session's
 footprint to a local SQLite database. The `/carbon-report` slash command reads
 this database to show your measured history.
 
+Carbon also depends on the grid powering the datacenter, not just token count.
+For the OpenCode path you can pick a provider on a low-carbon grid: **Scaleway**
+runs on the (largely nuclear) French grid, and **Mistral** is EU-hosted. They're
+a greener choice for trivial or throwaway work. You can't pick a region for the
+Claude subscription, so this only applies to OpenCode.
+
 ## 💡 Tips and Tricks
 
 ### OpenCode Web

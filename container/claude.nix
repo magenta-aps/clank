@@ -11,6 +11,10 @@
     ];
 
   environment.systemPackages = [
+    # RTK (Rust Token Killer): a CLI proxy that strips noise from command
+    # output before it reaches the model, cutting token use (and carbon).
+    # Wired in via the PreToolUse hook below. https://github.com/rtk-ai/rtk
+    pkgs.rtk
     (pkgs.claude-code.overrideAttrs (previousAttrs: {
       # The most upvoted issue on Claude Code: "Feature Request: Support
       # AGENTS.md", i.e. "stop requiring me to put ads for Anthropic in my
@@ -52,6 +56,20 @@
       # yolo
       permissions.defaultMode = "bypassPermissions";
       skipDangerousModePermissionPrompt = true;
+      # Transparently rewrite Bash commands through RTK (see systemPackages
+      # above) so e.g. `git status` runs as `rtk git status`, trimming output
+      # before it costs context tokens. This is what `rtk init` would patch in.
+      hooks.PreToolUse = [
+        {
+          matcher = "Bash";
+          hooks = [
+            {
+              type = "command";
+              command = "rtk hook claude";
+            }
+          ];
+        }
+      ];
       # claude-carbon: show live CO2 estimate in the status line, and persist
       # each session's footprint to the SQLite DB on Stop (read by the
       # /carbon-report command, wired up in carbon.nix). We invoke via `bash`
