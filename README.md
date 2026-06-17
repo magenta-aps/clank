@@ -128,6 +128,11 @@ in `~/.config/clank.sh`, e.g.:
 export CLAUDE_AUTOCOMPACT_PCT_OVERRIDE='80'
 ```
 
+The bundled `AGENTS.md` (in [`container/vars.nix`](container/vars.nix)) also
+asks Claude to be concise (output tokens are the most expensive) and to avoid
+spawning subagents or workflows unless a task genuinely needs parallelism, since
+each one multiplies token use.
+
 Carbon also depends on the grid powering the datacenter, not just token count.
 For the OpenCode path you can pick a provider on a low-carbon grid: **Scaleway**
 runs on the (largely nuclear) French grid, and **Mistral** is EU-hosted. They're
