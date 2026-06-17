@@ -36,6 +36,10 @@
     # DISABLE_AUTOUPDATER, DISABLE_BUG_COMMAND,
     # DISABLE_ERROR_REPORTING and DISABLE_TELEMETRY.
     CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "1";
+    # Reduce carbon footprint: compact the context earlier than the ~95%
+    # default so we don't keep a bloated, token-heavy session around.
+    # https://github.com/gwittebolle/claude-carbon
+    CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "50";
   };
 
   # https://code.claude.com/docs/en/settings
@@ -51,8 +55,15 @@
         commit = "";
         pr = "";
       };
-      # Default to the best model
-      model = "opus";
+      # Default to Sonnet rather than Opus. Model choice is the biggest lever
+      # on Claude's carbon footprint, and Sonnet is plenty for most work.
+      # Override per-session with `/model opus` when you need it.
+      # https://github.com/gwittebolle/claude-carbon
+      model = "sonnet";
+      # Cap reasoning effort to avoid burning thinking tokens on routine tasks.
+      # This is the lever that works on adaptive-reasoning models (Opus/Sonnet),
+      # which ignore MAX_THINKING_TOKENS. Bump to "high" when you need it.
+      effortLevel = "medium";
       # yolo
       permissions.defaultMode = "bypassPermissions";
       skipDangerousModePermissionPrompt = true;

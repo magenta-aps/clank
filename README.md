@@ -101,6 +101,33 @@ to display a live CO2 estimate in the status line and persist each session's
 footprint to a local SQLite database. The `/carbon-report` slash command reads
 this database to show your measured history.
 
+Clank also ships with a few greener defaults, configured in
+[`container/claude.nix`](container/claude.nix):
+
+- **`model = "sonnet"`** — defaults to Sonnet instead of Opus. Model choice is
+  the biggest lever, and Sonnet is plenty for most work. Switch per-session with
+  `/model opus` when you need more, or `/model haiku` for trivial tasks (the
+  low-carbon floor). Change the default in `claude.nix`.
+- **`effortLevel = "medium"`** — caps reasoning effort so routine tasks don't
+  burn thinking tokens. (This is the lever that works on Sonnet and Opus, which
+  ignore `MAX_THINKING_TOKENS`.) Raise it to `"high"` in `claude.nix` when you
+  need deeper reasoning.
+- **`CLAUDE_AUTOCOMPACT_PCT_OVERRIDE = "50"`** — compacts the context at 50%
+  instead of the ~95% default, keeping sessions leaner. Tune the percentage in
+  `claude.nix`.
+
+Use `/carbon-report` rather than assuming the greenest setting: e.g. compacting
+earlier keeps each turn leaner, but on long tasks it can force re-reading files
+and break prompt-cache reuse, so the best percentage is workload-dependent.
+
+Changing any of these requires rebuilding the container (`nix run ~/clank`
+during development). For a one-off session you can instead set them on the host
+in `~/.config/clank.sh`, e.g.:
+
+```sh
+export CLAUDE_AUTOCOMPACT_PCT_OVERRIDE='80'
+```
+
 Carbon also depends on the grid powering the datacenter, not just token count.
 For the OpenCode path you can pick a provider on a low-carbon grid: **Scaleway**
 runs on the (largely nuclear) French grid, and **Mistral** is EU-hosted. They're
