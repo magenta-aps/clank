@@ -94,6 +94,13 @@ sessions. In this case, run `claude setup-token` and add the resulting token to
 export CLAUDE_CODE_OAUTH_TOKEN='<your-access-token-here>'
 ```
 
+#### 🌱 Carbon Footprint
+
+Clank integrates [claude-carbon](https://github.com/gwittebolle/claude-carbon)
+to display a live CO2 estimate in the status line and persist each session's
+footprint to a local SQLite database. The `/carbon-report` slash command reads
+this database to show your measured history.
+
 ## 💡 Tips and Tricks
 
 ### OpenCode Web

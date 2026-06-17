@@ -1,6 +1,7 @@
 {
   pkgs,
   vars,
+  claude-carbon,
   ...
 }: {
   # Cringe
@@ -51,13 +52,36 @@
       # yolo
       permissions.defaultMode = "bypassPermissions";
       skipDangerousModePermissionPrompt = true;
+      # claude-carbon: show live CO2 estimate in the status line, and persist
+      # each session's footprint to the SQLite DB on Stop (read by the
+      # /carbon-report command, wired up in carbon.nix). We invoke via `bash`
+      # so it doesn't depend on the script's executable bit in the nix store.
+      statusLine = {
+        type = "command";
+        command = "${pkgs.bash}/bin/bash ${claude-carbon}/scripts/statusline.sh";
+      };
+      hooks.Stop = [
+        {
+          matcher = "";
+          hooks = [
+            {
+              type = "command";
+              command = "${pkgs.bash}/bin/bash ${claude-carbon}/scripts/persist-session.sh";
+            }
+          ];
+        }
+      ];
     });
   in [
     # It's annoying to bind mount a single file, so we symlink
     # /root/.claude.json to the persisted directory.
     "L+ /root/.claude.json - - - - /root/.claude/claude.json"
     "C /root/.claude/claude.json 0600 root root - ${claudeJson}"
-    "C /root/.claude/settings.json 0600 root root - ${settingsJson}"
+    # settings.json is generated config, not runtime state, so symlink it into
+    # the store. Using "C" (copy-if-absent) here meant the file persisted in the
+    # mounted ~/.claude volume and never picked up rebuilds; "L+" always points
+    # at the current build (and unlinks any stale copy first).
+    "L+ /root/.claude/settings.json - - - - ${settingsJson}"
     # We must use AGENTS.md, rather than CLAUDE.md, since we patched the binary
     "L+ /root/.claude/AGENTS.md - - - - ${vars.AGENTS_md}"
   ];
