@@ -1,5 +1,6 @@
 {lib, ...}: {
   imports = [
+    ./carbon.nix
     ./claude.nix
     ./hardware.nix
     ./nix.nix

@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "claude-carbon": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1781276814,
+        "narHash": "sha256-mIleuP7NbbJgKRWq40jkPwOEqBdYJ/IdFgQszFqRBQQ=",
+        "owner": "gwittebolle",
+        "repo": "claude-carbon",
+        "rev": "e20d40a007aa4f6fb20f4274e3d02e69948dc5db",
+        "type": "github"
+      },
+      "original": {
+        "owner": "gwittebolle",
+        "repo": "claude-carbon",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1783776592,
@@ -18,6 +34,7 @@
     },
     "root": {
       "inputs": {
+        "claude-carbon": "claude-carbon",
         "nixpkgs": "nixpkgs"
       }
     }

@@ -5,11 +5,18 @@
     nixpkgs = {
       url = "github:NixOS/nixpkgs/nixos-unstable";
     };
+    # CO2 footprint tracker for Claude Code (status line + /carbon-report).
+    # Not a flake, so we consume its scripts directly. https://github.com/gwittebolle/claude-carbon
+    claude-carbon = {
+      url = "github:gwittebolle/claude-carbon";
+      flake = false;
+    };
   };
 
   outputs = {
     self,
     nixpkgs,
+    claude-carbon,
   }: let
     forAllSystems = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed;
   in {
@@ -22,6 +29,7 @@
     in {
       container = nixpkgs.lib.nixosSystem {
         system = system;
+        specialArgs = {inherit claude-carbon;};
         modules = [./container];
       };
 
