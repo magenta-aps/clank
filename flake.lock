@@ -1,5 +1,21 @@
 {
   "nodes": {
+    "claude-carbon": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1790600372,
+        "narHash": "sha256-r5cydZfKzkcpNGKM3pqA2dOJmUcj73cVAguYlQ3R+1w=",
+        "owner": "gwittebolle",
+        "repo": "claude-carbon",
+        "rev": "ae5b75e1b58a11366ef394590e833da10d74eb6b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "gwittebolle",
+        "repo": "claude-carbon",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -7,11 +23,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790365885,
-        "narHash": "sha256-iQ0ebhiVo64NktTnwft9hNxlFu4j5cvljVxyJaEVIP4=",
+        "lastModified": 1790742230,
+        "narHash": "sha256-5399J1/O3DyLSsYGVa950JtOUDB9Reqvy7FhfDuTVzk=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "7b4c5ec4bedaf1e062bbc1bcaeddbc6bd242aa1b",
+        "rev": "0aefa652eb6fd8b7396af25e8c81cb0790f12cc2",
         "type": "github"
       },
       "original": {
@@ -35,6 +51,7 @@
     },
     "root": {
       "inputs": {
+        "claude-carbon": "claude-carbon",
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs"
       }
