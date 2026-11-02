@@ -50,7 +50,7 @@ dummy credentials and a credentials-injecting proxy.
 ```
 
 This requires configuring OpenCode or Claude Code to use the proxy. See the
-[OpenCode documentation](https://opencode.ai/docs/providers) for a list of
+[OpenCode documentation](https://opencode.ai/v2/docs/providers/) for a list of
 supported providers. Base URLs can be found at <https://models.dev/api.json>.
 Some providers use a custom SDK, in which case they are documented at
 <https://ai-sdk.dev/providers/ai-sdk-providers>.

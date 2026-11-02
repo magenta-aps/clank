@@ -33,7 +33,7 @@
       };
     };
     # https://github.com/containers/storage/blob/main/docs/containers-storage.conf.5.md
-    storage.settings = {
+    storage.rootful.settings = {
       storage = {
         # Root is tmpfs, but building images or running containers may require
         # a lot of space. Use (per-Clank) disk for that. Once an image is

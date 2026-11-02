@@ -95,9 +95,9 @@ Add the `clank` package to your modules, e.g. `clank.nix`:
           home-manager.users.root = {
             programs.opencode = {
               settings = {
-                provider = {
+                providers = {
                   greenpt = {
-                    options = {
+                    settings = {
                       baseURL = "http://clank-proxy:1689/v1";
                     };
                   };
@@ -155,9 +155,9 @@ directory, e.g. `~/clank/flake.nix`.
             home-manager.users.root = {
               programs.opencode = {
                 settings = {
-                  provider = {
+                  providers = {
                     greenpt = {
-                      options = {
+                      settings = {
                         baseURL = "http://clank-proxy:1689/v1";
                       };
                     };

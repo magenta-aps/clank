@@ -1,22 +1,37 @@
-{lib, vars, ...}: {
+{
+  lib,
+  vars,
+  ...
+}: {
   home-manager.users.root = {
     programs.opencode = {
       enable = true;
       context = vars.AGENTS_md;
-      # https://opencode.ai/docs/config
+      # https://opencode.ai/v2/docs/
       settings = {
-        autoupdate = false;
-        # By default, OpenCode isn't allowed to read .env files, and has to ask
-        # permission to do anything outside the working directory.
-        permission = "allow";
+        # By default, OpenCode isn't allowed to read .env files
+        permissions = [
+          {
+            action = "*";
+            resource = "*";
+            effect = "allow";
+          }
+        ];
+        # Disable update checks
+        update = "disable";
+        # Enable web search
+        websearch = lib.mkDefault {
+          provider = "random";
+        };
       };
     };
-  };
-
-  environment.variables = {
-    # Enable Exa web search tools
-    # https://opencode.ai/docs/tools/#websearch
-    OPENCODE_ENABLE_EXA = lib.mkDefault "1";
+    # The OpenCode state is shared between Clank containers, so they will try
+    # to share one background server by default, which doesn't work.
+    # `service.json` isn't part of the home-manager module yet.
+    # https://opencode.ai/v2/docs/cli/#background-service
+    xdg.configFile."opencode/service.json".text = builtins.toJSON {
+      disabled = true;
+    };
   };
 
   fileSystems."/root/.local/share/opencode" = {

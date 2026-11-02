@@ -67,7 +67,7 @@
 
           Then repeat these steps until I stop you:
 
-          1.  Run the command below, giving the bash tool a `timeout` of `600000`. It
+          1.  Run the command below, giving the shell tool a `timeout` of `600000`. It
               blocks until a comment addressed to clank is waiting, then prints the merge
               request's threads as text. Timing out before that happens is normal, so
               just run it again.
