@@ -47,6 +47,10 @@
             ["--set" "CLANK_CADDY_BIN" "${pkgs.caddy}/bin/caddy"]
             ["--set" "CLANK_EMPTY_DIRECTORY" "${pkgs.emptyDirectory}"]
             ["--set" "CLANK_ROOT" container.config.system.build.toplevel]
+            # Don't clash with potentially system-installed Podman
+            ["--set" "CONTAINERS_CONF" "/dev/null"]
+            ["--set" "CONTAINERS_REGISTRIES_CONF" "/dev/null"]
+            ["--set" "CONTAINERS_STORAGE_CONF" "/dev/null"]
           ];
         };
     in {
