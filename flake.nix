@@ -43,6 +43,7 @@
           ];
 
           makeWrapperArgs = builtins.concatLists [
+            ["--set" "CLANK_CACERT" pkgs.cacert]
             ["--set" "CLANK_CADDY_BIN" "${pkgs.caddy}/bin/caddy"]
             ["--set" "CLANK_EMPTY_DIRECTORY" "${pkgs.emptyDirectory}"]
             ["--set" "CLANK_ROOT" container.config.system.build.toplevel]

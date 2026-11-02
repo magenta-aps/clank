@@ -7,6 +7,7 @@ from tempfile import TemporaryDirectory
 from uuid import uuid4
 
 # Passed by buildPythonApplication's makeWrapperArgs in flake.nix
+CLANK_CACERT = os.environ["CLANK_CACERT"]
 CLANK_CADDY_BIN = os.environ["CLANK_CADDY_BIN"]
 CLANK_EMPTY_DIRECTORY = os.environ["CLANK_EMPTY_DIRECTORY"]
 CLANK_ROOT = os.environ["CLANK_ROOT"]
@@ -126,6 +127,7 @@ def main(tmp: Path) -> None:
                 f"--network={identifier}",
                 "--network-alias=clank-proxy",
                 "--volume=/nix/store:/nix/store:ro",
+                f"--volume={CLANK_CACERT}/etc/ssl:/etc/ssl:ro",
                 f"--volume={caddyfile}:/Caddyfile:ro",
                 "--rootfs",
                 f"{CLANK_EMPTY_DIRECTORY}:O",
