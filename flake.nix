@@ -13,28 +13,7 @@
 
   outputs = {nixpkgs, ...} @ inputs: let
     forAllSystems = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed;
-
-    # FIXME: workaround for https://github.com/NixOS/nixpkgs/pull/582675
-    opencodeHashFix = final: prev: {
-      opencode = prev.opencode.overrideAttrs (old: {
-        node_modules = old.node_modules.overrideAttrs (_: {
-          outputHash =
-            if prev.stdenv.hostPlatform.isLinux
-            then "sha256-prx9dX7kUvs/E3zopkaPk5LXh3xJAy5sZeum/W8L7cA="
-            else if prev.stdenv.hostPlatform.isDarwin
-            then "sha256-dIveiaiPFGSItwLyeMuPDxTE9gpvvnlTCB/+nG24qCc="
-            else throw "Unsupported platform";
-        });
-      });
-    };
   in {
-    # `nix eval .#legacyPackages...`
-    legacyPackages = forAllSystems (
-      system: nixpkgs.legacyPackages.${system}.extend opencodeHashFix
-    );
-
-    overlays.default = opencodeHashFix;
-
     # `nix fmt`
     formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
 
@@ -45,10 +24,7 @@
         container = nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = {inherit inputs;};
-          modules =
-            [{nixpkgs.overlays = [opencodeHashFix];}]
-            ++ [./container]
-            ++ extraModules;
+          modules = [./container] ++ extraModules;
         };
       in
         pkgs.python3Packages.buildPythonApplication {
