@@ -39,6 +39,12 @@
 		header_up Authorization "Basic <base64>"  # `printf 'clank:<token>' | base64 --wrap=0`
 	}
 }
+:1974 {
+	reverse_proxy https://redmine.magenta.dk {
+        # https://redmine.magenta.dk/my/account (API access key)
+		header_up X-Redmine-API-Key "<token>"
+	}
+}
 ```
 
 ### 2. Clank
@@ -89,6 +95,7 @@ Add the `clank` package to your modules, e.g. `clank.nix`:
             "${inputs.clank}/magenta/modules/gitlab.nix"
             "${inputs.clank}/magenta/modules/grafana-logs.nix"
             "${inputs.clank}/magenta/modules/kagi.nix"
+            "${inputs.clank}/magenta/modules/redmine.nix"
           ];
           # https://search.nixos.org/options?channel=unstable&query=programs.opencode&source=home_manager
           # https://search.nixos.org/options?channel=unstable&query=programs.claude-code&source=home_manager
@@ -149,6 +156,7 @@ directory, e.g. `~/clank/flake.nix`.
               "${inputs.clank}/magenta/modules/gitlab.nix"
               "${inputs.clank}/magenta/modules/grafana-logs.nix"
               "${inputs.clank}/magenta/modules/kagi.nix"
+              "${inputs.clank}/magenta/modules/redmine.nix"
             ];
             # https://search.nixos.org/options?channel=unstable&query=programs.opencode&source=home_manager
             # https://search.nixos.org/options?channel=unstable&query=programs.claude-code&source=home_manager
